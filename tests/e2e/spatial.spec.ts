@@ -52,7 +52,7 @@ async function cameraScreenshot(
   await page.locator('.stage').screenshot({ path })
 }
 
-test('spatial cameras and forecast inspection preserve reality, and on-canvas futures remain actionable', async ({
+test('spatial cameras and forecast inspection preserve reality', async ({
   page,
 }) => {
   await page
@@ -146,6 +146,14 @@ test('spatial cameras and forecast inspection preserve reality, and on-canvas fu
   await expect(
     page.getByRole('button', { name: /^Preview future [A-D]$/ }),
   ).toHaveCount(4)
+  await expectExperimentState(page, origin)
+})
+
+test('a spatial future selection executes in physics and changes the rendered world', async ({ page }) => {
+  await page.getByRole('button', { name: 'Plan', exact: true }).click()
+  await page.getByRole('button', { name: 'Preview future A', exact: true }).click()
+  await expect(page.locator('.candidate.selected')).toContainText('Direct push')
+  const origin = await experimentState(page)
   const canvasBeforeAct = await page.locator('.microverse canvas').screenshot()
   await page.getByRole('button', { name: 'Act', exact: true }).click()
   await expect

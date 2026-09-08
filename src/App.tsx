@@ -10,6 +10,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { LabEngine, type ModelId, type ScenarioId } from './core'
+import { advancePlayback } from './core/playback'
 import { Stage } from './ui/Stage'
 import { Measurements } from './ui/Measurements'
 import { ExperimentControls } from './ui/ExperimentControls'
@@ -73,15 +74,10 @@ export default function App() {
       accumulator = 0,
       lastUi = 0
     const frame = (now: number) => {
-      const delta = Math.min((now - last) / 1000, 0.1)
+      const delta = (now - last) / 1000
       last = now
       if (playing) {
-        accumulator += delta
-        let steps = 0
-        while (accumulator >= 1 / 60 && steps++ < 6) {
-          engine.step()
-          accumulator -= 1 / 60
-        }
+        accumulator = advancePlayback(engine, delta, accumulator)
         if (engine.state.success || engine.state.time >= 18) setPlaying(false)
       }
       if (now - lastUi > 100) {

@@ -30,7 +30,7 @@ Rapier reality → camera observation + proprioception → belief memory
 
 ## Reality and control
 
-Rapier is authoritative for positions, rotations, velocities and physical contacts. The engine advances exactly `1/60` second per step, independently of render frequency. The UI may perform several steps per rendered frame. World coordinates use metres, seconds, kilograms and Y-up. The sensor FOV, sensor yaw and ramp slope controls use **degrees**.
+Rapier is authoritative for positions, rotations, velocities and physical contacts. The engine advances exactly `1/60` second per step, independently of render frequency. The UI may perform several steps per rendered frame. `core/playback.ts` accumulates elapsed time and catches up at most 15 fixed ticks (250ms) per frame, retaining fractional ticks. It discards excess wall time after long suspension rather than fast-forwarding an unbounded interval, and stops at success or the 18-second playback limit. Tests compare identical world states under 60fps and 4fps scheduling. World coordinates use metres, seconds, kilograms and Y-up. The sensor FOV, sensor yaw and ramp slope controls use **degrees**.
 
 The planning cube uses an explicit assisted planar pusher. A velocity servo accelerates it by at most 6 m/s² per horizontal axis toward a route command, with a target speed capped at 1.6 m/s. Rapier resolves cube–obstacle contacts. Cube rotation and vertical translation are constrained. The robot is a sensor collider that follows behind the cube as a visual proxy; it does not physically push through a simulated manipulator. This is a control abstraction, not a robotics manipulation benchmark.
 

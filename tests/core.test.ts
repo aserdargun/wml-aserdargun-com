@@ -1,3 +1,4 @@
+import { advancePlayback } from '../src/core/playback'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
   LabEngine,
@@ -565,5 +566,31 @@ describe('comparative forecast experiment', () => {
     expect(() => engine.switchBranch('missing')).toThrow(
       'Unknown or expired branch',
     )
+  })
+})
+
+
+describe('playback scheduling across rendering speeds', () => {
+  it('produces identical physics at 60fps and 4fps without changing the fixed tick', async () => {
+    const fast = await create('dynamics')
+    const slow = await create('dynamics')
+    let remainder = 0
+    for (let i = 0; i < 180; i++) remainder = advancePlayback(fast, 1 / 60, remainder)
+    remainder = 0
+    for (let i = 0; i < 12; i++) remainder = advancePlayback(slow, 0.25, remainder)
+    expect(fast.state.tick).toBe(180)
+    expect(slow.state).toEqual(fast.state)
+  })
+
+  it('bounds catch-up after suspension and preserves fractional ticks', async () => {
+    const engine = await create('dynamics')
+    let remainder = advancePlayback(engine, 60, 0)
+    expect(engine.state.tick).toBe(15)
+    remainder = advancePlayback(engine, 1 / 120, remainder)
+    expect(engine.state.tick).toBe(15)
+    remainder = advancePlayback(engine, 1 / 120, remainder)
+    expect(engine.state.tick).toBe(16)
+    advancePlayback(engine, Number.NaN, remainder)
+    expect(engine.state.tick).toBe(16)
   })
 })
