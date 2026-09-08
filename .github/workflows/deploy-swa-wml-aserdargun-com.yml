@@ -1,0 +1,44 @@
+name: Deploy WML to Azure Static Web Apps
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: swa-wml-aserdargun-com-production
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --legacy-peer-deps
+      - name: Test deterministic core
+        run: npm test
+      - name: Type-check and build production artifact
+        run: npm run build
+      - name: Verify artifact hashes and references
+        run: npm run verify:artifact
+      - name: Install test browser
+        run: npx playwright install --with-deps chromium
+      - name: Test production browser flows
+        run: npm run test:e2e:production
+      - name: Deploy verified artifact
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN_SWA_WML_ASERDARGUN_COM }}
+          action: upload
+          app_location: dist
+          output_location: ''
+          skip_app_build: true
