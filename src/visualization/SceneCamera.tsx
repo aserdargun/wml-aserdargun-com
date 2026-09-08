@@ -68,7 +68,7 @@ export function SceneCamera({
   }, [view, reset, portrait, camera, invalidate, scenario, lens, engine])
   useFrame((_, delta) => {
     if (transition.current && controls.current) {
-      const amount = 1 - Math.exp(-Math.min(delta, 0.05) * 7)
+      const amount = 1 - Math.exp(-Math.min(delta, 0.25) * 7)
       camera.position.lerp(destination.current, amount)
       controls.current.target.lerp(destinationTarget.current, amount)
       controls.current.update()

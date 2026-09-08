@@ -26,9 +26,15 @@ export interface SceneProps {
   analysisView: AnalysisView
   revision: number
 }
-const Studio = memo(function Studio({ belief }: { belief: boolean }) {
+const Studio = memo(function Studio({
+  belief,
+  software,
+}: {
+  belief: boolean
+  software: boolean
+}) {
   const width = useThree((state) => state.size.width)
-  const shadowSize = width > 1024 ? 2048 : 1024
+  const shadowSize = software ? 512 : width > 1024 ? 2048 : 1024
   return (
     <>
       <color attach="background" args={['#29372f']} />
@@ -54,7 +60,7 @@ const Studio = memo(function Studio({ belief }: { belief: boolean }) {
         intensity={1.45}
         color="#e6edf5"
       />
-      <Environment resolution={128} frames={1}>
+      <Environment resolution={software ? 64 : 128} frames={1}>
         <Lightformer
           form="rect"
           intensity={2}
@@ -83,11 +89,11 @@ const Studio = memo(function Studio({ belief }: { belief: boolean }) {
   )
 })
 
-function Contents(props: SceneProps) {
+function Contents(props: SceneProps & { software: boolean }) {
   const { engine, lens, locale, showLabels, showFov } = props
   return (
     <>
-      <Studio belief={lens === 'belief'} />
+      <Studio belief={lens === 'belief'} software={props.software} />
       {engine.state.objects.map((object) => (
         <WorldBody
           key={`${engine.state.scenario}-${object.id}`}
@@ -150,20 +156,27 @@ export function Microverse(props: SceneProps) {
       </p>
     </div>
   )
-  const supported = useMemo(() => {
+  const capability = useMemo(() => {
     try {
       const c = document.createElement('canvas')
       const gl = c.getContext('webgl2')
-      const ok = !!gl
+      const debug = gl?.getExtension('WEBGL_debug_renderer_info')
+      const renderer =
+        gl && debug ? String(gl.getParameter(debug.UNMASKED_RENDERER_WEBGL)) : ''
+      const result = {
+        supported: !!gl,
+        software: /swiftshader|llvmpipe|softpipe|software rasterizer/i.test(renderer),
+      }
       gl?.getExtension('WEBGL_lose_context')?.loseContext()
-      return ok
+      return result
     } catch {
-      return false
+      return { supported: false, software: false }
     }
   }, [])
   return (
     <div
       className="microverse"
+      data-renderer-mode={capability.software ? 'software' : 'hardware'}
       data-camera-view={props.cameraView}
       data-lens={props.lens}
       data-forecast-time={props.forecastTime.toFixed(1)}
@@ -174,15 +187,18 @@ export function Microverse(props: SceneProps) {
         'Etkileşimli 3D dünya. Metin alternatifi için etiketli kontrolleri ve durum tablosunu kullan.',
       )}
     >
-      {!supported || lost ? (
+      {!capability.supported || lost ? (
         summary
       ) : (
         <CanvasBoundary fallback={summary}>
           <Canvas
             shadows
             frameloop="demand"
-            gl={{ antialias: true, powerPreference: 'high-performance' }}
-            dpr={[1, 1.5]}
+            gl={{
+              antialias: !capability.software,
+              powerPreference: 'high-performance',
+            }}
+            dpr={capability.software ? 0.75 : [1, 1.5]}
             camera={{
               position: [-8.5, 7.3, 10.8],
               fov: 40,
@@ -199,7 +215,7 @@ export function Microverse(props: SceneProps) {
             }}
           >
             <Suspense fallback={null}>
-              <Contents {...props} />
+              <Contents {...props} software={capability.software} />
             </Suspense>
           </Canvas>
         </CanvasBoundary>

@@ -48,7 +48,7 @@ The Microverse is a procedural instrument with a machined, metre-marked deck, de
 
 After planning, move **3D forecast time** to place translucent future objects at a saved forecast instant while reality stays still. The displayed coordinate belongs to the selected forecast (or the dynamics baseline during model comparison). Click an A–D beacon in the scene to preview that action, then use **Act** to execute it. The page's action controls and timeline remain available in the expanded layout.
 
-Rendering detail does not change the physics. Agent views hide privileged actual-history lines. The canvas requests frames as needed while paused and continues drawing during execution; no external 3D or lighting assets are loaded.
+Rendering detail does not change the physics. Identified software renderers use lower pixel and shadow resolution to keep the same experiment usable without a GPU. Agent views hide privileged actual-history lines. The canvas requests frames as needed while paused and continues drawing during execution; no external 3D or lighting assets are loaded.
 
 ## Boundaries
 
