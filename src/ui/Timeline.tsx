@@ -1,3 +1,5 @@
+import { LabControlButton } from '@aserdargun/lab-ui'
+import { manifest } from '../ils/catalog'
 import {
   Play,
   Pause,
@@ -73,27 +75,20 @@ export function Timeline({
       </div>
       <div className="timeline-bottom">
         <div className="transport">
-          <button
-            onClick={toggle}
-            aria-label={
-              playing
-                ? say(locale, 'Pause', 'Duraklat')
-                : say(locale, 'Play', 'Oynat')
-            }
-          >
+          <LabControlButton action={playing ? 'pause' : 'play'} capabilities={manifest.capabilities} locale={locale} onClick={toggle}>
             {playing ? <Pause size={16} /> : <Play size={16} />}
-          </button>
-          <button onClick={step} aria-label={say(locale, 'Step', 'Adımla')}>
+          </LabControlButton>
+          <LabControlButton action="step" capabilities={manifest.capabilities} locale={locale} onClick={step} aria-label={say(locale, 'Step', 'Adımla')}>
             <SkipForward size={16} />
-          </button>
-          <button onClick={reset} aria-label={say(locale, 'Reset', 'Sıfırla')}>
+          </LabControlButton>
+          <LabControlButton action="reset" capabilities={manifest.capabilities} locale={locale} onClick={reset}>
             <RotateCcw size={16} />
-          </button>
+          </LabControlButton>
           <span className="transport-divider" />
-          <button onClick={() => rewind(0)} disabled={!end}>
+          <LabControlButton action="rewind" capabilities={manifest.capabilities} locale={locale} aria-label={say(locale, 'Rewind', 'Geri sar')} title={say(locale, 'Restore the saved decision point', 'Kaydedilmiş karar noktasını geri yükle')} onClick={() => rewind(0)} disabled={!end}>
             <Rewind size={15} />
             {say(locale, 'Rewind', 'Geri sar')}
-          </button>
+          </LabControlButton>
           <button onClick={fork} disabled={playing}>
             <GitBranch size={15} />
             {say(locale, 'Branch', 'Dal oluştur')}

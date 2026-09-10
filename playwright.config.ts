@@ -1,7 +1,8 @@
 import { defineConfig } from '@playwright/test'
 const production = !!process.env.WML_E2E_PRODUCTION
 const remoteURL = process.env.WML_E2E_URL
-const baseURL = remoteURL || (production ? 'http://127.0.0.1:5189' : 'http://127.0.0.1:5188')
+const previewPort = process.env.WML_E2E_PORT || '5189'
+const baseURL = remoteURL || (production ? `http://127.0.0.1:${previewPort}` : 'http://127.0.0.1:5188')
 export default defineConfig({
   testDir: 'tests/e2e',
   timeout: 45000,
@@ -23,7 +24,7 @@ export default defineConfig({
     },
   },
   webServer: remoteURL ? undefined : {
-    command: production ? 'npm run preview -- --port 5189' : 'npm run dev',
+    command: production ? `npm run preview -- --port ${previewPort}` : 'npm run dev',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 30000,

@@ -1,0 +1,214 @@
+{
+  "schemaVersion": "0.1",
+  "id": "wml",
+  "code": "wml",
+  "name": "World Model Laboratory",
+  "canonicalUrl": "https://wml.aserdargun.com/",
+  "type": "interactive-lab",
+  "parentApp": "wfm",
+  "status": "live",
+  "tagline": {
+    "en": "Observe. Imagine. Predict. Act. Learn.",
+    "tr": "Gözle. Hayal et. Tahmin et. Uygula. Öğren."
+  },
+  "guidingQuestion": {
+    "en": "How does an imagined route differ from its executed outcome?",
+    "tr": "Hayal edilen rota, yürütülen sonuçtan nasıl ayrılır?"
+  },
+  "concepts": [
+    "concept:world-model",
+    "concept:partial-observability",
+    "concept:prediction-error",
+    "concept:counterfactual"
+  ],
+  "capabilities": {
+    "play": true,
+    "pause": true,
+    "step": true,
+    "reset": true,
+    "rewind": true,
+    "compare": true,
+    "guidedLesson": true,
+    "experiments": true,
+    "assumptions": true,
+    "evidence": true
+  },
+  "experiments": [
+    {
+      "id": "planning",
+      "title": {
+        "en": "Plan a path",
+        "tr": "Bir yol planla"
+      },
+      "route": "/?scenario=planning"
+    },
+    {
+      "id": "dynamics",
+      "title": {
+        "en": "Predict motion",
+        "tr": "Hareketi tahmin et"
+      },
+      "route": "/?scenario=dynamics"
+    },
+    {
+      "id": "occlusion",
+      "title": {
+        "en": "See the unseen",
+        "tr": "Görünmeyeni izle"
+      },
+      "route": "/?scenario=occlusion"
+    },
+    {
+      "id": "surprise",
+      "title": {
+        "en": "Meet a surprise",
+        "tr": "Bir sürprizle karşılaş"
+      },
+      "route": "/?scenario=surprise"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "world-model-101",
+      "title": {
+        "en": "World Model 101",
+        "tr": "Dünya Modeli 101"
+      },
+      "route": "/?lesson=world-model-101"
+    }
+  ],
+  "evidencePolicy": {
+    "summary": {
+      "en": "Simulation supplies the reference; predictors estimate futures; errors are calculated from both. These results do not validate real-world transfer.",
+      "tr": "Referansı simülasyon sağlar; modeller geleceği tahmin eder; hata ikisinden hesaplanır. Sonuçlar gerçek dünyaya aktarımı doğrulamaz."
+    },
+    "allowedKinds": [
+      "simulated",
+      "estimated",
+      "calculated"
+    ]
+  },
+  "assumptions": [
+    {
+      "id": "simulated-world",
+      "title": {
+        "en": "A simulated reference world",
+        "tr": "Simüle edilmiş referans dünya"
+      },
+      "description": {
+        "en": "Rapier supplies the reference trajectory inside this educational universe. It is not a physical measurement or a validated model of a real robot.",
+        "tr": "Rapier bu eğitim evrenindeki referans yörüngeyi sağlar. Fiziksel ölçüm veya gerçek robotun doğrulanmış modeli değildir."
+      }
+    },
+    {
+      "id": "hand-coded-model",
+      "title": {
+        "en": "Hand-coded predictors",
+        "tr": "Elle yazılmış tahmin modelleri"
+      },
+      "description": {
+        "en": "Constant velocity, simple dynamics and biased dynamics use observation-derived belief. No trained foundation world model runs here.",
+        "tr": "Sabit hız, basit dinamikler ve yanlı dinamikler gözlemden türetilen inancı kullanır. Eğitilmiş temel dünya modeli çalışmaz."
+      }
+    },
+    {
+      "id": "sensor-controller",
+      "title": {
+        "en": "Idealized sensing and assisted control",
+        "tr": "İdealleştirilmiş algılama ve destekli kontrol"
+      },
+      "description": {
+        "en": "Horizontal field of view and center-ray occlusion simplify sensing. Memory weight is not probability. A bounded velocity servo assists the pusher; grasping and wheel contact are abstracted.",
+        "tr": "Yatay görüş alanı ve merkez ışını örtülmesi algılamayı basitleştirir. Bellek ağırlığı olasılık değildir. Sınırlı hız servosu iticiyi destekler; kavrama ve tekerlek teması soyutlanır."
+      }
+    }
+  ],
+  "evidence": [
+    {
+      "schemaVersion": "0.1",
+      "id": "trajectory",
+      "kind": "simulated",
+      "verificationStatus": "not-applicable",
+      "label": {
+        "en": "Reference trajectory",
+        "tr": "Referans yörünge"
+      },
+      "assumptionRefs": [
+        "simulated-world"
+      ],
+      "notes": {
+        "en": "Recorded simulator positions are the reference for this experiment, not real-world sensor data.",
+        "tr": "Kaydedilen simülatör konumları bu deneyin referansıdır; gerçek dünya sensör verisi değildir."
+      }
+    },
+    {
+      "schemaVersion": "0.1",
+      "id": "forecast",
+      "kind": "estimated",
+      "verificationStatus": "not-applicable",
+      "label": {
+        "en": "Forecast and remembered position",
+        "tr": "Tahmin ve hatırlanan konum"
+      },
+      "assumptionRefs": [
+        "hand-coded-model",
+        "sensor-controller"
+      ],
+      "notes": {
+        "en": "Model rollouts and extrapolated memory can be wrong. Sensitivity samples are not confidence intervals.",
+        "tr": "Model yörüngeleri ve ileri taşınan bellek hatalı olabilir. Duyarlılık örnekleri güven aralığı değildir."
+      }
+    },
+    {
+      "schemaVersion": "0.1",
+      "id": "error",
+      "kind": "calculated",
+      "verificationStatus": "not-applicable",
+      "label": {
+        "en": "Position error and RMSE",
+        "tr": "Konum hatası ve RMSE"
+      },
+      "calculatedFrom": [
+        "trajectory",
+        "forecast"
+      ],
+      "assumptionRefs": [
+        "simulated-world"
+      ],
+      "notes": {
+        "en": "Euclidean differences are calculated at matching simulated times over the executed portion only.",
+        "tr": "Öklid farkları yalnızca yürütülen kısımda, eşleşen simülasyon zamanları için hesaplanır."
+      }
+    }
+  ],
+  "related": {
+    "theory": [
+      {
+        "id": "wfm",
+        "label": {
+          "en": "Learn the theory · World Models Atlas",
+          "tr": "Kuramı öğren · World Models Atlas"
+        },
+        "url": "https://wfm.aserdargun.com/en/",
+        "localizedUrls": {
+          "en": "https://wfm.aserdargun.com/en/",
+          "tr": "https://wfm.aserdargun.com/tr/"
+        }
+      }
+    ],
+    "labs": [
+      {
+        "id": "hex",
+        "label": {
+          "en": "Explore embodiment · HEX",
+          "tr": "Bedenselleşmeyi keşfet · HEX"
+        },
+        "url": "https://hex.aserdargun.com/",
+        "localizedUrls": {
+          "en": "https://hex.aserdargun.com/?lang=en",
+          "tr": "https://hex.aserdargun.com/?lang=tr"
+        }
+      }
+    ]
+  }
+}

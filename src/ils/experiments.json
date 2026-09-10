@@ -1,0 +1,238 @@
+[
+  {
+    "schemaVersion": "0.1",
+    "id": "planning",
+    "title": {
+      "en": "Plan a path",
+      "tr": "Bir yol planla"
+    },
+    "guidingQuestion": {
+      "en": "How does an imagined route differ from its executed outcome?",
+      "tr": "Hayal edilen rota, yürütülen sonuçtan nasıl ayrılır?"
+    },
+    "description": {
+      "en": "Move the blue cube to the target. Imagine four actions, compare their outcomes, then make one future real.",
+      "tr": "Mavi küpü hedefe götür. Dört eylemi hayal et, sonuçlarını karşılaştır ve bir geleceği gerçeğe dönüştür."
+    },
+    "concepts": [
+      "concept:world-model",
+      "concept:partial-observability",
+      "concept:prediction-error",
+      "concept:counterfactual"
+    ],
+    "learningObjectives": [
+      {
+        "en": "A planner uses predicted outcomes to choose an action; the model supplies those predictions.",
+        "tr": "Planlayıcı, eylem seçmek için tahminleri kullanır; bu tahminleri model sağlar."
+      }
+    ],
+    "observations": [
+      {
+        "id": "outcome",
+        "label": {
+          "en": "Prediction and outcome",
+          "tr": "Tahmin ve sonuç"
+        },
+        "explanation": {
+          "en": "Plan creates futures without moving reality. Act executes the selected action.",
+          "tr": "Planla, gerçekliği hareket ettirmeden gelecekler üretir. Uygula, seçilen eylemi yürütür."
+        },
+        "evidenceRefs": [
+          "trajectory",
+          "forecast",
+          "error"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "simulated-world",
+      "hand-coded-model",
+      "sensor-controller"
+    ],
+    "evidenceRefs": [
+      "trajectory",
+      "forecast",
+      "error"
+    ],
+    "config": {
+      "scenarioId": "planning"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "dynamics",
+    "title": {
+      "en": "Predict motion",
+      "tr": "Hareketi tahmin et"
+    },
+    "guidingQuestion": {
+      "en": "How do model assumptions affect prediction error over time?",
+      "tr": "Model varsayımları zaman içindeki tahmin hatasını nasıl etkiler?"
+    },
+    "description": {
+      "en": "Release a ball on a ramp. Compare a predicted path with actual physics. Change friction or the model and repeat.",
+      "tr": "Rampadaki topu serbest bırak. Tahmin edilen yolu gerçek fizikle karşılaştır. Sürtünmeyi veya modeli değiştirip tekrarla."
+    },
+    "concepts": [
+      "concept:world-model",
+      "concept:partial-observability",
+      "concept:prediction-error",
+      "concept:counterfactual"
+    ],
+    "learningObjectives": [
+      {
+        "en": "Prediction error is measured at matching simulation times, in metres.",
+        "tr": "Tahmin hatası, eşleşen simülasyon zamanlarında metre cinsinden ölçülür."
+      }
+    ],
+    "observations": [
+      {
+        "id": "outcome",
+        "label": {
+          "en": "Prediction and outcome",
+          "tr": "Tahmin ve sonuç"
+        },
+        "explanation": {
+          "en": "Dashed samples are predictions. The continuous trail is the recorded outcome.",
+          "tr": "Kesikli örnekler tahminlerdir. Sürekli iz, kaydedilen sonuçtur."
+        },
+        "evidenceRefs": [
+          "trajectory",
+          "forecast",
+          "error"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "simulated-world",
+      "hand-coded-model",
+      "sensor-controller"
+    ],
+    "evidenceRefs": [
+      "trajectory",
+      "forecast",
+      "error"
+    ],
+    "config": {
+      "scenarioId": "dynamics"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "occlusion",
+    "title": {
+      "en": "See the unseen",
+      "tr": "Görünmeyeni izle"
+    },
+    "guidingQuestion": {
+      "en": "What can memory tell us when the sensor cannot see an object?",
+      "tr": "Sensör bir nesneyi göremediğinde bellek ne söyleyebilir?"
+    },
+    "description": {
+      "en": "A moving ball passes behind a panel. Switch between what exists, what is seen, and what is remembered.",
+      "tr": "Hareketli bir top perdenin arkasından geçer. Var olan, görülen ve hatırlanan arasında geçiş yap."
+    },
+    "concepts": [
+      "concept:world-model",
+      "concept:partial-observability",
+      "concept:prediction-error",
+      "concept:counterfactual"
+    ],
+    "learningObjectives": [
+      {
+        "en": "Missing observations do not imply that an object stopped existing.",
+        "tr": "Gözlem eksikliği, nesnenin yok olduğu anlamına gelmez."
+      }
+    ],
+    "observations": [
+      {
+        "id": "outcome",
+        "label": {
+          "en": "Prediction and outcome",
+          "tr": "Tahmin ve sonuç"
+        },
+        "explanation": {
+          "en": "An occluded object leaves the observation, but its last known state stays in memory.",
+          "tr": "Örtülen nesne gözlemden çıkar, son bilinen durumu bellekte kalır."
+        },
+        "evidenceRefs": [
+          "trajectory",
+          "forecast",
+          "error"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "simulated-world",
+      "hand-coded-model",
+      "sensor-controller"
+    ],
+    "evidenceRefs": [
+      "trajectory",
+      "forecast",
+      "error"
+    ],
+    "config": {
+      "scenarioId": "occlusion"
+    }
+  },
+  {
+    "schemaVersion": "0.1",
+    "id": "surprise",
+    "title": {
+      "en": "Meet a surprise",
+      "tr": "Bir sürprizle karşılaş"
+    },
+    "guidingQuestion": {
+      "en": "How does new observation correct a prediction after an intervention?",
+      "tr": "Müdahaleden sonra yeni gözlem tahmini nasıl düzeltir?"
+    },
+    "description": {
+      "en": "Predict the ball’s path. Start the world, then apply an unexpected impulse. Watch evidence correct the belief.",
+      "tr": "Topun yolunu tahmin et. Dünyayı başlat, sonra beklenmedik bir itki uygula. Yeni kanıtın inancı düzeltmesini izle."
+    },
+    "concepts": [
+      "concept:world-model",
+      "concept:partial-observability",
+      "concept:prediction-error",
+      "concept:counterfactual"
+    ],
+    "learningObjectives": [
+      {
+        "en": "Acting in a changing world requires observation and revision.",
+        "tr": "Değişen dünyada eylem, gözlem ve gözden geçirme gerektirir."
+      }
+    ],
+    "observations": [
+      {
+        "id": "outcome",
+        "label": {
+          "en": "Prediction and outcome",
+          "tr": "Tahmin ve sonuç"
+        },
+        "explanation": {
+          "en": "An external impulse changes the real velocity while the original prediction remains.",
+          "tr": "Dışarıdan gelen itki gerçek hızı değiştirir; ilk tahmin korunur."
+        },
+        "evidenceRefs": [
+          "trajectory",
+          "forecast",
+          "error"
+        ]
+      }
+    ],
+    "assumptionRefs": [
+      "simulated-world",
+      "hand-coded-model",
+      "sensor-controller"
+    ],
+    "evidenceRefs": [
+      "trajectory",
+      "forecast",
+      "error"
+    ],
+    "config": {
+      "scenarioId": "surprise"
+    }
+  }
+]

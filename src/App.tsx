@@ -1,3 +1,6 @@
+import { LabShell } from '@aserdargun/lab-ui'
+import '@aserdargun/lab-ui/styles.css'
+import { manifest, experiments, initialRoute } from './ils/catalog'
 import { useCallback, useEffect, useState } from 'react'
 import {
   ArrowRight,
@@ -20,8 +23,10 @@ import { Inspector } from './ui/Inspector'
 import { Timeline } from './ui/Timeline'
 import { chapters, scenarioContent, type Lens } from './lessons/content'
 import { say, type Locale } from './ui/i18n'
+const route = initialRoute(window.location.search)
 export default function App() {
   const [locale, setLocale] = useState<Locale>(() => {
+    if (route.locale) return route.locale
     try {
       return localStorage.getItem('wml.locale') === 'tr' ? 'tr' : 'en'
     } catch {
@@ -39,7 +44,7 @@ export default function App() {
   const [showFov, setFov] = useState(false),
     [showLabels, setLabels] = useState(true),
     [cameraPreset, setCamera] = useState(0)
-  const [lesson, setLesson] = useState<number | null>(null),
+  const [lesson, setLesson] = useState<number | null>(route.lesson ? 0 : null),
     [message, setMessage] = useState('')
   const [analysisView, setAnalysisView] = useState<AnalysisView>('off')
   const [expandedStage, setExpandedStage] = useState(false)
@@ -47,7 +52,7 @@ export default function App() {
   useEffect(() => {
     let disposed = false
     let instance: LabEngine | undefined
-    LabEngine.create('planning')
+    LabEngine.create(route.scenario)
       .then((e) => {
         instance = e
         if (disposed) e.dispose()
@@ -589,6 +594,7 @@ export default function App() {
             setPlaying={setPlaying}
             touch={touch}
           />
+          <LabShell manifest={manifest} experiment={experiments.find(e => e.id === scenario.id)!} locale={locale} />
           <footer className="lab-footer">
             <p>
               {say(

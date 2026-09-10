@@ -19,13 +19,13 @@ if (manifest.application !== 'WML' || manifest.commit !== expectedCommit) throw 
 const types = {
   '.html': ['text/html'], '.js': ['application/javascript', 'text/javascript'],
   '.css': ['text/css'], '.svg': ['image/svg+xml'], '.woff': ['font/woff', 'application/font-woff'],
-  '.woff2': ['font/woff2'],
+  '.woff2': ['font/woff2'], '.png': ['image/png'], '.json': ['application/json'],
 }
 let verified = 0
 for (const asset of manifest.assets) {
   // Azure consumes this configuration rather than serving it as a public asset.
   if (asset.path === 'staticwebapp.config.json') continue
-  if (!/^(assets\/[^/]+|index\.html|favicon\.svg)$/.test(asset.path)) throw new Error(`Unexpected asset path: ${asset.path}`)
+  if (!/^(assets\/[^/]+|index\.html|favicon\.svg|favicon-(32|192)\.png|apple-touch-icon\.png|lab\.manifest\.json)$/.test(asset.path)) throw new Error(`Unexpected asset path: ${asset.path}`)
   const result = await get('/' + asset.path)
   const mime = result.headers.get('content-type')?.split(';')[0]
   if (!types[extname(asset.path)]?.includes(mime)) throw new Error(`Incorrect MIME for ${asset.path}: ${mime}`)

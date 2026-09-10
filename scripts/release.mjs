@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
-import { readdir, readFile, writeFile } from 'node:fs/promises'
+import { readdir, readFile, writeFile, copyFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 const root = 'dist'
@@ -16,6 +16,7 @@ async function files(directory, prefix = '') {
 }
 const mode = process.argv[2]
 if (mode === 'write') {
+  await copyFile('lab.manifest.json', join(root, 'lab.manifest.json'))
   let commit = process.env.GITHUB_SHA
   if (!commit) {
     try { commit = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim() }
@@ -41,7 +42,7 @@ if (mode === 'write') {
   for (const [, path] of html.matchAll(/(?:src|href)="(\/assets\/[^"?#]+)"/g)) {
     if (!paths.includes(path.slice(1))) throw new Error(`Missing HTML asset: ${path}`)
   }
-  for (const path of ['index.html', 'favicon.svg', 'staticwebapp.config.json']) {
+  for (const path of ['index.html', 'favicon.svg', 'staticwebapp.config.json', 'lab.manifest.json']) {
     if (!paths.includes(path)) throw new Error(`Missing required artifact: ${path}`)
   }
   console.log(`Verified ${paths.length} artifact files for ${manifest.commit}`)

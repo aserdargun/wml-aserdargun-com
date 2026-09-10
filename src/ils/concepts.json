@@ -1,0 +1,30 @@
+[
+  {
+    "id": "concept:world-model",
+    "label": {
+      "en": "World model",
+      "tr": "Dünya modeli"
+    }
+  },
+  {
+    "id": "concept:partial-observability",
+    "label": {
+      "en": "Partial observability",
+      "tr": "Kısmi gözlemlenebilirlik"
+    }
+  },
+  {
+    "id": "concept:prediction-error",
+    "label": {
+      "en": "Prediction error",
+      "tr": "Tahmin hatası"
+    }
+  },
+  {
+    "id": "concept:counterfactual",
+    "label": {
+      "en": "Counterfactual experiment",
+      "tr": "Karşıolgusal deney"
+    }
+  }
+]
