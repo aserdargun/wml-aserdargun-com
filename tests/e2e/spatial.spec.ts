@@ -55,6 +55,8 @@ async function cameraScreenshot(
 test('spatial cameras and forecast inspection preserve reality', async ({
   page,
 }) => {
+  // This flow checks many camera/lens transitions on CI's software renderer.
+  test.setTimeout(120000)
   await page
     .locator('.stage')
     .screenshot({ path: join(tmpdir(), 'wml-spatial-reality.png') })
