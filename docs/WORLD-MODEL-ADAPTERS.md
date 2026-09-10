@@ -65,6 +65,10 @@ The planner is separate from the adapter. It evaluates the finite allowed candid
 
 Time-travel snapshots retain the belief, prediction set and comparison forecast. Counterfactual predictions therefore start from the information available at the restored time, rather than today's hidden reality.
 
+`engine.canAct` requires a sampled forecast from the current tick and decision. Executing an action, applying an intervention, or changing the sensor makes it stale even if the tick is unchanged. The UI disables Act until Predict or Plan refreshes the decision. A stale existing forecast also rejects `engine.act()` at the core boundary. Direct actuator calls without any forecast remain available to simulation tests. Forecast arrays are deeply frozen so a preview cannot mutate another branch's saved evidence.
+
+`SCHEMA_VERSIONS` in `types.ts` declares world/scenario v1, predictor/comparison/branch v2 and export v2. `wml-experiment-v2` exports those versions plus recorded surprise impulses. For the active branch, actions and interventions reflect the restored cursor, including the distinction before and after an action at the same tick. Other branches are explicitly retained alternatives. This report remains an evidence export, not an importable physics replay.
+
 ## Fair comparisons from a frozen origin
 
 Each new forecast saves `ForecastOrigin { belief, context, horizon }`. `engine.analyze(spread = 0.5)` returns an `AnalysisBundle`, or `undefined` if no forecast origin exists. It calls every adapter with independent copies of **the same saved belief, action and horizon**, rather than allowing the later models to see later reality. The saved origin remains unchanged when actual physics advances or an unexpected intervention occurs.
@@ -84,6 +88,8 @@ const errors = engine.analysisErrors
 The engine exposes `analysis` and `analysisErrors` getters. `AnalysisBundle` carries the full frozen `origin`, `originTick`, `originTime`, `action`, `horizon`, `forecastByModel` and `ensemble`. Preview selection does not change the committed experiment; `act()` re-pairs an existing analysis when a different action is actually executed. Requesting a new prediction establishes a new origin and clears the previous analysis.
 
 Error curves use actual samples at matching absolute ticks and never include samples after the current timeline cursor. They report Euclidean position error in metres. Their RMS summaries can be used to rank the models **for the observed portion of this experiment**; ties or absent data are valid outcomes. Calling analysis before execution does not manufacture a measured winner.
+
+The displayed minimum-RMSE conclusion includes all models within an absolute tolerance of 10⁻⁶ m of the minimum. This declared numerical tie tolerance is not a statistical significance test. It avoids presenting sub-micrometre floating-point differences as a unique winner; exports retain the unrounded measured values.
 
 ## Declared parameter sensitivity
 

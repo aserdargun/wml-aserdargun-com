@@ -77,7 +77,7 @@ export function ExperimentControls({
           <>
             <label>
               {say(locale, 'Reality friction', 'Gerçeklik sürtünmesi')}
-              <b>{engine.parameters.friction.toFixed(2)}</b>
+              <b>{scenario.id === 'occlusion' ? '0.00' : engine.parameters.friction.toFixed(2)}</b>
               <input
                 aria-label={say(
                   locale,
@@ -88,7 +88,9 @@ export function ExperimentControls({
                 min={0}
                 max={1}
                 step={0.05}
-                value={engine.parameters.friction}
+                value={scenario.id === 'occlusion' ? 0 : engine.parameters.friction}
+                disabled={scenario.id === 'occlusion'}
+                aria-describedby={scenario.id === 'occlusion' ? 'occlusion-friction-note' : undefined}
                 onChange={(e) => {
                   setPlaying(false)
                   engine.configure({ friction: +e.target.value })
@@ -135,6 +137,13 @@ export function ExperimentControls({
           </label>
         )}
       </div>
+      {scenario.id === 'occlusion' && (
+        <p id="occlusion-friction-note" className="small muted">
+          {say(locale,
+            'This occlusion experiment fixes friction and drag at zero to isolate observation and memory.',
+            'Bu örtülme deneyi, gözlem ve belleği ayrı incelemek için sürtünme ve direnci sıfırda tutar.')}
+        </p>
+      )}
       <p className="small muted">
         {say(
           locale,

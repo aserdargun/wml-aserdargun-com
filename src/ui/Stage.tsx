@@ -14,6 +14,7 @@ import type { CameraView } from '../visualization/SceneCamera'
 import type { AnalysisView } from './AnalysisPanel'
 import type { Lens } from '../lessons/content'
 import { actionName, say, type Locale } from './i18n'
+import { navigateTabs } from './tabNavigation'
 interface Props {
   engine: LabEngine
   locale: Locale
@@ -82,6 +83,10 @@ export function Stage({
             (v, i) => (
               <button
                 role="tab"
+                id={`lens-${v}`}
+                aria-controls="world-lens-panel"
+                tabIndex={lens === v ? 0 : -1}
+                onKeyDown={navigateTabs}
                 aria-selected={lens === v}
                 onClick={() => switchLens(v)}
                 key={v}
@@ -128,7 +133,7 @@ export function Stage({
           {expanded ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
         </button>
       </div>
-      <div className="stage-viewport">
+      <div className="stage-viewport" id="world-lens-panel" role="tabpanel" aria-labelledby={`lens-${lens}`}>
         <Microverse
           engine={engine}
           lens={lens}

@@ -161,7 +161,7 @@ test('zero sensitivity spread exports nine coincident forecasts and an auditable
     .screenshot({ path: join(tmpdir(), 'wml-depth-sensitivity-zero.png') })
 
   const report = await exportEvidence(page, info, 'zero-spread')
-  expect(report.format).toBe('wml-experiment-v1')
+  expect(report.format).toBe('wml-experiment-v2')
   expect(report.analysis.ensemble.spread).toBe(0)
   expect(report.analysis.ensemble.members).toHaveLength(9)
   expect(report.analysis.origin.belief.tick).toBe(report.analysis.originTick)
@@ -226,6 +226,7 @@ test('switching branches restores successful and colliding realities with their 
     'Not yet simulated',
   )
   const rewoundReport = await exportEvidence(page, info, 'rewound')
+  expect(rewoundReport.branches.find(branch => branch.id === rewoundReport.branchId)?.actions).toEqual([])
   expect(
     rewoundReport.actual.every(
       (sample) => sample.tick <= rewoundReport.throughTick,

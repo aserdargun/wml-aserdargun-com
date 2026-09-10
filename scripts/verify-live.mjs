@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import { extname } from 'node:path'
+import { validateReleaseManifest } from './release-contract.mjs'
 
 const [address, expectedCommit] = process.argv.slice(2)
 if (!address || !/^[a-f0-9]{40}$/.test(expectedCommit || '')) {
@@ -15,6 +16,7 @@ async function get(path) {
 const response = await get('/release.json')
 if (!response.headers.get('content-type')?.includes('application/json')) throw new Error('Incorrect release MIME type')
 const manifest = await response.json()
+validateReleaseManifest(manifest)
 if (manifest.application !== 'WML' || manifest.commit !== expectedCommit) throw new Error('Live commit does not match intended release')
 const types = {
   '.html': ['text/html'], '.js': ['application/javascript', 'text/javascript'],

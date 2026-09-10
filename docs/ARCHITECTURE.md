@@ -128,3 +128,11 @@ The current four scene constructions live together intentionally. Extract a scen
 ## Verification
 
 `tests/core.test.ts` covers FOV and occlusion, hidden-state isolation, memory reacquisition, independent action-conditioned predictions, finite planner selection, physical collision and goal success, aligned error, retained forecast pairing, exact snapshot continuation, distinct counterfactual histories, reset, ramp dynamics and surprise updates. Comparative tests also verify a common frozen origin, commitment despite preview changes, exact zero-spread equality, deterministic parameter bounds, tick-aligned error curves, cursor filtering, immutable snapshot sharing and branch switching. Browser QA must additionally verify that rendered state follows restored authoritative state and that the flagship UI completes the plan–act–rewind–branch flow.
+
+## Audit hardening (2026-09-10)
+
+Paused endpoints between sampled ticks are retained separately from decision checkpoints. Restoring a branch recovers that endpoint; rewinding still retrieves the pre-action decision. Invalid step counts do not fork, and non-finite configuration or timeline input is rejected before physics mutation. Predictions shared by snapshots are immutable. A forecast must be refreshed after an action, intervention or changed sensor configuration, even at the same tick.
+
+Representation and inspector tabs use roving focus with Left/Right and Home/End keys. The interactive scene exposes its labelled controls as a group. The occlusion scenario explicitly displays its fixed zero friction and drag, so its disabled friction control does not imply a physical adjustment.
+
+Artifact checks share `scripts/release-contract.mjs`: release identity, full commit SHA, timestamp, required assets, unique safe relative paths, byte lengths and SHA-256 metadata must be valid before file reads or asset requests. Local verification still checks the complete file set and all hashes; production verification also accepts the locally packaged PNG icons.

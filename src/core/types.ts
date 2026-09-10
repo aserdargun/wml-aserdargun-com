@@ -1,3 +1,15 @@
+/** Explicit contracts for reproducible exports; bump the affected field when semantics change. */
+export const SCHEMA_VERSIONS = {
+  world: '1', scenario: '1', predictor: '2', comparison: '2', branch: '2', export: '2',
+} as const
+
+export interface Intervention {
+  tick: number
+  kind: 'surprise-impulse'
+  /** Applied change of velocity in m/s, not a prediction. */
+  deltaVelocity: Vec3
+}
+
 export type Vec3 = [number, number, number]
 export type Quaternion = [number, number, number, number]
 export type ScenarioId = 'planning' | 'dynamics' | 'occlusion' | 'surprise'
@@ -132,6 +144,7 @@ export interface ReplayBranch {
   parentBranchId: string | null
   forkTick: number
   actions: { tick: number; action: ActionId }[]
+  interventions: Intervention[]
   trajectory: TrajectorySample[]
 }
 

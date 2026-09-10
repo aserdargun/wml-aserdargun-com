@@ -48,8 +48,10 @@ type Snapshot = {
   collisionCount: number
   activeContacts: string[]
   actions: ReplayBranch['actions']
+  interventions: ReplayBranch['interventions']
+  forecastFresh: boolean
 }
-type StoredBranch = { info: ReplayBranch; frames: Snapshot[] }
+type StoredBranch = { info: ReplayBranch; frames: Snapshot[]; resume?: Snapshot }
 let initialization: Promise<void> | undefined
 
 /** The only owner of authoritative physics. Renderers read its cached plain state. */
@@ -73,8 +75,10 @@ export class LabEngine {
   private _currentFrame = 0
   private collisionCount = 0
   private actionHistory: ReplayBranch['actions'] = []
+  private interventions: ReplayBranch['interventions'] = []
   private activeContacts = new Set<string>()
   private disposed = false
+  private forecastFresh = false
 
   static async create(scenario: ScenarioId = 'planning'): Promise<LabEngine> {
     initialization ??= RAPIER.init()
@@ -101,6 +105,12 @@ export class LabEngine {
   }
   get selectedAction() {
     return this._selectedAction
+  }
+  /** A same-tick intervention also makes a saved decision stale. */
+  get canAct() {
+    return this.forecastFresh && this.predictions.some(p =>
+      p.action === this.selectedAction && p.startTick === this.state.tick && p.samples.length > 0,
+    )
   }
   get analysis() {
     return this._analysis
@@ -130,6 +140,13 @@ export class LabEngine {
   }
   get branches(): ReplayBranch[] {
     return this.storedBranches.map((b) => b.info)
+  }
+  /** Actions restored at the current cursor, excluding the retained future. */
+  get currentActions(): ReplayBranch['actions'] {
+    return clone(this.actionHistory)
+  }
+  get currentInterventions(): ReplayBranch['interventions'] {
+    return clone(this.interventions)
   }
   get actualTrajectory(): TrajectorySample[] {
     return this.branch.info.trajectory
@@ -187,8 +204,10 @@ export class LabEngine {
     this._comparisonPrediction = undefined
     this.forecastOrigin = undefined
     this._analysis = undefined
+    this.forecastFresh = false
     this.collisionCount = 0
     this.actionHistory = []
+    this.interventions = []
     this.activeContacts.clear()
     this.branchCounter = 0
     this._currentBranchId = 'branch-0'
@@ -217,6 +236,7 @@ export class LabEngine {
           parentBranchId: null,
           forkTick: 0,
           actions: [],
+          interventions: [],
           trajectory: [],
         },
         frames: [],
@@ -398,7 +418,7 @@ export class LabEngine {
   }
 
   step(count = 1): void {
-    if (this.disposed) return
+    if (this.disposed || !Number.isFinite(count) || count < 1) return
     if (this.currentFrame < this.branch.frames.length - 1) this.fork()
     if (!this._comparisonPrediction)
       this.commitComparison(this.controller?.action ?? 'wait')
@@ -494,12 +514,13 @@ export class LabEngine {
       context: this.context,
       horizon: normalizedHorizon,
     })
-    this._predictions = MODELS[model].rollout(
+    this._predictions = freezeForecast(MODELS[model].rollout(
       clone(this.forecastOrigin.belief),
       SCENARIOS[this.state.scenario].allowedActions,
       normalizedHorizon,
       clone(this.forecastOrigin.context),
-    )
+    ))
+    this.forecastFresh = true
     this._comparisonPrediction = undefined
     this._analysis = undefined
     if (!this._selectedAction)
@@ -556,7 +577,12 @@ export class LabEngine {
   act(action: ActionId = this._selectedAction ?? 'wait'): void {
     if (!SCENARIOS[this.state.scenario].allowedActions.includes(action))
       throw new Error('Action is not allowed in this scenario')
+    if (this.predictions.length && (!this.forecastFresh || !this.predictions.some(p =>
+      p.action === action && p.startTick === this.state.tick && p.samples.length > 0,
+    ))) throw new Error('Generate a fresh forecast before acting')
     if (this.currentFrame < this.branch.frames.length - 1) this.fork()
+    // Preserve the decision before an impulse, including between sampled ticks.
+    this.updateCurrentSnapshot()
     this._selectedAction = action
     this.controller = { action, waypoint: 0 }
     this.commitComparison(action)
@@ -573,22 +599,31 @@ export class LabEngine {
       )
     }
     this.actionHistory.push({ tick: this.state.tick, action })
+    this.forecastFresh = false
     this.branch.info.actions = clone(this.actionHistory)
     this.readState()
   }
 
   surprise(): void {
     if (this.currentFrame < this.branch.frames.length - 1) this.fork()
+    this.updateCurrentSnapshot()
     const body = this.body(this.focusId)
     body.applyImpulse(
       { x: -0.2 * body.mass(), y: 0, z: 2.5 * body.mass() },
       true,
     )
+    this.interventions.push({ tick: this.state.tick, kind: 'surprise-impulse', deltaVelocity: [-0.2, 0, 2.5] })
+    this.forecastFresh = false
+    this.branch.info.interventions = clone(this.interventions)
     this.readState()
     // The estimator is intentionally not updated until its next observation.
   }
 
   configure(parameters: Partial<LabParameters>): void {
+    for (const [key, value] of Object.entries(parameters)) {
+      if (value !== undefined && !Number.isFinite(value))
+        throw new RangeError(`Parameter ${key} must be finite`)
+    }
     const normalized = {
       friction: clamp(parameters.friction ?? this.parameters.friction, 0, 1),
       initialVelocity: clamp(
@@ -612,6 +647,10 @@ export class LabEngine {
       normalized.friction !== this.parameters.friction ||
       normalized.initialVelocity !== this.parameters.initialVelocity ||
       normalized.slope !== this.parameters.slope
+    const sensorChanged = normalized.sensorYaw !== this.parameters.sensorYaw ||
+      normalized.sensorFov !== this.parameters.sensorFov
+    if (!physicalChanged && !sensorChanged) return
+    if (sensorChanged) this.forecastFresh = false
     this._parameters = normalized
     if (physicalChanged) this.reset()
     else {
@@ -646,10 +685,13 @@ export class LabEngine {
       collisionCount: this.collisionCount,
       activeContacts: [...this.activeContacts],
       actions: clone(this.actionHistory),
+      interventions: clone(this.interventions),
+      forecastFresh: this.forecastFresh,
     }
   }
 
   private saveFrame(): void {
+    this.branch.resume = undefined
     this.branch.frames.push(this.capture())
     this.branch.info.trajectory.push(this.sample())
     if (this.branch.frames.length > MAX_FRAMES) {
@@ -662,20 +704,36 @@ export class LabEngine {
   private updateCurrentSnapshot(): void {
     // Editing an earlier decision does not replace the parent's stored future.
     if (this.currentFrame < this.branch.frames.length - 1) return
-    if (this.branch.frames.at(-1)?.state.tick === this.state.tick)
+    if (this.branch.frames.at(-1)?.state.tick === this.state.tick) {
+      const saved = this.branch.frames[this.currentFrame]
+      // Preview/analysis must not overwrite a pre-intervention decision at the same tick.
+      if (saved.actions.length !== this.actionHistory.length ||
+          saved.interventions.length !== this.interventions.length) return
       this.branch.frames[this.currentFrame] = this.capture()
+    }
     else this.saveFrame()
   }
 
   rewind(index: number): void {
+    if (!Number.isFinite(index)) throw new RangeError('Frame index must be finite')
+    // The cursor can sit between samples. Preserve that exact endpoint for
+    // branch restoration while keeping the decision checkpoint unchanged.
+    if (this.currentFrame === this.branch.frames.length - 1)
+      this.branch.resume = this.capture()
     const frameIndex = clamp(
       Math.round(index),
       0,
       this.branch.frames.length - 1,
     )
     const snapshot = this.branch.frames[frameIndex]
+    this.restore(snapshot)
+    this._currentFrame = frameIndex
+  }
+
+  private restore(snapshot: Snapshot): void {
+    const restored = RAPIER.World.restoreSnapshot(snapshot.physics)
     this.world.free()
-    this.world = RAPIER.World.restoreSnapshot(snapshot.physics)
+    this.world = restored
     this._state = clone(snapshot.state)
     this._observation = clone(snapshot.observation)
     this._belief = clone(snapshot.belief)
@@ -689,24 +747,39 @@ export class LabEngine {
     this.collisionCount = snapshot.collisionCount
     this.activeContacts = new Set(snapshot.activeContacts)
     this.actionHistory = clone(snapshot.actions)
-    this._currentFrame = frameIndex
+    this.interventions = clone(snapshot.interventions)
+    this.forecastFresh = snapshot.forecastFresh
   }
 
   /** Inspect another retained reality without deleting either recorded future. */
   switchBranch(id: string, frameIndex?: number): void {
     const target = this.storedBranches.find((branch) => branch.info.id === id)
     if (!target) throw new Error(`Unknown or expired branch: ${id}`)
+    if (frameIndex !== undefined && !Number.isFinite(frameIndex))
+      throw new RangeError('Frame index must be finite')
     if (
       this.currentFrame === this.branch.frames.length - 1 &&
       this.branch.frames.at(-1)?.state.tick !== this.state.tick
     )
       this.saveFrame()
+    if (this.currentFrame === this.branch.frames.length - 1) this.branch.resume = this.capture()
     this._currentBranchId = id
-    this.rewind(frameIndex ?? target.frames.length - 1)
+    if (frameIndex === undefined && target.resume) {
+      this.restore(target.resume)
+      this._currentFrame = target.frames.length - 1
+    } else {
+      const index = clamp(Math.round(frameIndex ?? target.frames.length - 1), 0, target.frames.length - 1)
+      this.restore(target.frames[index])
+      this._currentFrame = index
+    }
   }
 
   fork(): ReplayBranch {
+    // Keep an unsampled parent endpoint before copying its timeline.
+    if (this.currentFrame === this.branch.frames.length - 1 &&
+        this.branch.frames.at(-1)?.state.tick !== this.state.tick) this.saveFrame()
     const parent = this.branch
+    if (this.currentFrame === parent.frames.length - 1) parent.resume = this.capture()
     const index = this.currentFrame
     const id = `branch-${++this.branchCounter}`
     const info: ReplayBranch = {
@@ -715,6 +788,7 @@ export class LabEngine {
       parentBranchId: parent.info.id,
       forkTick: this.state.tick,
       actions: clone(this.actionHistory),
+      interventions: clone(this.interventions),
       trajectory: clone(
         parent.info.trajectory.filter((s) => s.tick <= this.state.tick),
       ),

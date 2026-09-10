@@ -45,7 +45,7 @@ export default function App() {
     [showLabels, setLabels] = useState(true),
     [cameraPreset, setCamera] = useState(0)
   const [lesson, setLesson] = useState<number | null>(route.lesson ? 0 : null),
-    [message, setMessage] = useState('')
+    [message, setMessage] = useState<{ en: string; tr: string } | null>(null)
   const [analysisView, setAnalysisView] = useState<AnalysisView>('off')
   const [expandedStage, setExpandedStage] = useState(false)
   const [completed, setCompleted] = useState<Record<string, boolean>>({})
@@ -107,7 +107,7 @@ export default function App() {
     setAnalysisView('off')
     setCompleted({})
     setError('')
-    setMessage('')
+    setMessage(null)
     touch()
   }
   const predict = () => {
@@ -117,14 +117,8 @@ export default function App() {
       engine.predict(model, horizon)
       setAnalysisView('off')
       switchLens('imagination')
-      setCompleted((c) => ({ ...c, predict: true }))
-      setMessage(
-        say(
-          locale,
-          'Prediction saved. Reality has not advanced.',
-          'Tahmin kaydedildi. Gerçeklik ilerlemedi.',
-        ),
-      )
+      setCompleted((c) => ({ ...c, predict: engine.predictions.some(p => p.samples.length > 0) }))
+      setMessage({ en: 'Prediction saved. Reality has not advanced.', tr: 'Tahmin kaydedildi. Gerçeklik ilerlemedi.' })
       touch()
     } catch (e) {
       setError(String(e))
@@ -137,57 +131,34 @@ export default function App() {
       engine.plan(model, horizon)
       setAnalysisView('off')
       switchLens('imagination')
-      setCompleted((c) => ({ ...c, plan: true, predict: true }))
-      setMessage(
-        say(
-          locale,
-          'Four futures evaluated. Select a route, then Act.',
-          'Dört gelecek değerlendirildi. Bir rota seç, ardından Uygula.',
-        ),
-      )
+      const hasForecast = engine.predictions.some(p => p.samples.length > 0)
+      setCompleted((c) => ({ ...c, plan: hasForecast, predict: hasForecast }))
+      setMessage({ en: 'Four futures evaluated. Select a route, then Act.', tr: 'Dört gelecek değerlendirildi. Bir rota seç, ardından Uygula.' })
       touch()
     } catch (e) {
       setError(String(e))
     }
   }
   const act = () => {
-    if (!engine) return
+    if (!engine || !engine.canAct) return
     engine.act()
     setPlaying(true)
     setCompleted((c) => ({ ...c, act: true }))
-    setMessage(
-      say(
-        locale,
-        'Action is executing in the physics world.',
-        'Eylem fizik dünyasında yürütülüyor.',
-      ),
-    )
+    setMessage({ en: 'Action is executing in the physics world.', tr: 'Eylem fizik dünyasında yürütülüyor.' })
     touch()
   }
   const rewind = (i: number) => {
     if (!engine) return
     setPlaying(false)
     engine.rewind(i)
-    setMessage(
-      say(
-        locale,
-        'Physics, controller and belief restored. Branch to try another action.',
-        'Fizik, denetleyici ve inanç geri yüklendi. Başka eylem için dal oluştur.',
-      ),
-    )
+    setMessage({ en: 'Physics, controller and belief restored. Branch to try another action.', tr: 'Fizik, denetleyici ve inanç geri yüklendi. Başka eylem için dal oluştur.' })
     touch()
   }
   const fork = () => {
     if (!engine) return
     setPlaying(false)
     engine.fork()
-    setMessage(
-      say(
-        locale,
-        'A new branch begins here. The previous trajectory is preserved as a dotted trace.',
-        'Buradan yeni bir dal başlıyor. Önceki yörünge noktalı iz olarak korundu.',
-      ),
-    )
+    setMessage({ en: 'A new branch begins here. The previous trajectory is preserved as a dotted trace.', tr: 'Buradan yeni bir dal başlıyor. Önceki yörünge noktalı iz olarak korundu.' })
     touch()
   }
   const startLesson = () => {
@@ -265,7 +236,7 @@ export default function App() {
         <div className="header-end">
           <a
             className="wfm-link"
-            href="https://wfm.aserdargun.com/en/"
+            href={`https://wfm.aserdargun.com/${locale}/`}
             target="_blank"
             rel="noreferrer"
           >
@@ -429,13 +400,7 @@ export default function App() {
                     value={model}
                     onChange={(e) => {
                       setModel(e.target.value as ModelId)
-                      setMessage(
-                        say(
-                          locale,
-                          'Model changed. Generate a new prediction to compare.',
-                          'Model değişti. Karşılaştırmak için yeni tahmin üret.',
-                        ),
-                      )
+                      setMessage({ en: 'Model changed. Generate a new prediction to compare.', tr: 'Model değişti. Karşılaştırmak için yeni tahmin üret.' })
                     }}
                   >
                     <option value="dynamics">
@@ -462,13 +427,7 @@ export default function App() {
                 <button
                   className="button-act"
                   onClick={act}
-                  disabled={
-                    !engine.predictions.find(
-                      (p) => p.action === engine.selectedAction,
-                    )?.samples.length ||
-                    playing ||
-                    engine.predictions[0]?.startTick !== engine.state.tick
-                  }
+                  disabled={!engine.canAct || playing}
                 >
                   {say(locale, 'Act', 'Uygula')}
                   <ArrowRight size={16} />
@@ -482,6 +441,12 @@ export default function App() {
                         'Target reached. Rewind to compare another action.',
                         'Hedefe ulaşıldı. Başka eylemi karşılaştırmak için geri sar.',
                       )
+                    : !playing && engine.predictions.length > 0 && !engine.canAct
+                      ? say(
+                          locale,
+                          'The decision has changed. Predict or Plan again before acting; the saved forecast remains available for comparison.',
+                          'Karar durumu değişti. Uygulamadan önce yeniden Tahmin et veya Planla; kayıtlı tahmin karşılaştırma için korunur.',
+                        )
                     : playing
                       ? say(
                           locale,
@@ -494,7 +459,7 @@ export default function App() {
                             'Paused. Inspect the evidence, or rewind to a decision point.',
                             'Duraklatıldı. Kanıtı incele veya bir karar noktasına geri sar.',
                           )
-                        : message) ||
+                        : message?.[locale]) ||
                   say(
                     locale,
                     'Start with Plan. Nothing moves until you act.',
@@ -510,13 +475,7 @@ export default function App() {
                   }
                   onClick={() => {
                     engine.surprise()
-                    setMessage(
-                      say(
-                        locale,
-                        'Unexpected impulse applied. The old prediction stays visible.',
-                        'Beklenmedik itki uygulandı. Eski tahmin görünür kalır.',
-                      ),
-                    )
+                    setMessage({ en: 'Unexpected impulse applied. The old prediction stays visible.', tr: 'Beklenmedik itki uygulandı. Eski tahmin görünür kalır.' })
                     touch()
                   }}
                 >
@@ -530,13 +489,7 @@ export default function App() {
                 playing={playing}
                 toggle={() => {
                   if (engine.state.time >= 18)
-                    setMessage(
-                      say(
-                        locale,
-                        'Rewind or reset to run again.',
-                        'Yeniden çalıştırmak için geri sar veya sıfırla.',
-                      ),
-                    )
+                    setMessage({ en: 'Rewind or reset to run again.', tr: 'Yeniden çalıştırmak için geri sar veya sıfırla.' })
                   else setPlaying(!playing)
                 }}
                 step={() => {
@@ -550,7 +503,7 @@ export default function App() {
                 switchBranch={(id) => {
                   setPlaying(false)
                   engine.switchBranch(id)
-                  setMessage('')
+                  setMessage(null)
                   setAnalysisView(engine.analysis ? 'models' : 'off')
                   touch()
                 }}

@@ -149,3 +149,15 @@ export function analysisErrors(
   ) as AnalysisErrors['byModel']
   return { throughTick: state.tick, byModel }
 }
+
+/** Ties are evidence too; do not turn registration order into a model ranking. */
+export function lowestRmseModels(errors: AnalysisErrors | undefined): ModelId[] {
+  if (!errors) return []
+  const measured = (Object.keys(errors.byModel) as ModelId[]).filter(model => {
+    const metrics = errors.byModel[model].metrics
+    return metrics.comparedSamples > 1 && metrics.trajectoryError !== null &&
+      Number.isFinite(metrics.trajectoryError)
+  })
+  const lowest = Math.min(...measured.map(model => errors.byModel[model].metrics.trajectoryError!))
+  return measured.filter(model => Math.abs(errors.byModel[model].metrics.trajectoryError! - lowest) <= 1e-6)
+}

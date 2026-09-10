@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Download, ArrowRight } from 'lucide-react'
 import type { LabEngine, ModelId } from '../core'
+import { lowestRmseModels, SCHEMA_VERSIONS } from '../core'
 import { TermHelp } from '../education/TermHelp'
 import { LearningCheck } from '../education/LearningCheck'
 import { ScientificPlot, type PlotSeries } from './AnalysisCharts'
@@ -115,19 +116,12 @@ export function AnalysisPanel({
         })),
       }))
     : []
-  const ranked = errors
-    ? models
-        .filter((m) => errors.byModel[m].metrics.comparedSamples > 1)
-        .sort(
-          (a, b) =>
-            (errors.byModel[a].metrics.trajectoryError ?? Infinity) -
-            (errors.byModel[b].metrics.trajectoryError ?? Infinity),
-        )
-    : []
+  const ranked = lowestRmseModels(errors)
   const exportEvidence = () => {
     if (!analysis || !errors) return
     const report = {
-      format: 'wml-experiment-v1',
+      format: 'wml-experiment-v2',
+      schemaVersions: SCHEMA_VERSIONS,
       scientificBoundary:
         'Educational simulation. Sensitivity samples are not probabilities. No future actual samples are included.',
       scenario: engine.state.scenario,
@@ -142,7 +136,8 @@ export function AnalysisPanel({
         id: b.id,
         parentBranchId: b.parentBranchId,
         forkTick: b.forkTick,
-        actions: b.actions,
+        actions: b.id === engine.currentBranchId ? engine.currentActions : b.actions,
+        interventions: b.id === engine.currentBranchId ? engine.currentInterventions : b.interventions,
       })),
       units: { position: 'm', time: 's', velocity: 'm/s' },
     }
@@ -507,7 +502,13 @@ export function AnalysisPanel({
           </div>
           <div className="analysis-conclusion">
             <p>
-              {ranked.length
+              {ranked.length > 1
+                ? say(
+                    locale,
+                    `${ranked.map(m => modelName(m, locale)).join(' · ')} share the lowest measured RMSE in this run (within 10⁻⁶ m).`,
+                    `${ranked.map(m => modelName(m, locale)).join(' · ')} bu koşuda en düşük ölçülen RMSE’yi paylaşıyor (10⁻⁶ m toleransla).`,
+                  )
+                : ranked.length
                 ? say(
                     locale,
                     `${modelName(ranked[0], locale)} has the lowest measured RMSE in this run.`,

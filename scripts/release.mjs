@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { readdir, readFile, writeFile, copyFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import { validateReleaseManifest } from './release-contract.mjs'
 
 const root = 'dist'
 const digest = (bytes) => createHash('sha256').update(bytes).digest('hex')
@@ -32,6 +33,7 @@ if (mode === 'write') {
   console.log(`WML release manifest: ${assets.length} files, ${commit}`)
 } else if (mode === 'verify') {
   const manifest = JSON.parse(await readFile(join(root, 'release.json'), 'utf8'))
+  validateReleaseManifest(manifest)
   const paths = await files(root)
   if (JSON.stringify(paths) !== JSON.stringify(manifest.assets.map(a => a.path))) throw new Error('Artifact file set mismatch')
   for (const asset of manifest.assets) {

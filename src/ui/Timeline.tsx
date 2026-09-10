@@ -105,12 +105,14 @@ export function Timeline({
       {engine.branches.length > 1 && (
         <div className="branch-comparison">
           {engine.branches.map((b) => {
+            const current = b.id === engine.currentBranchId
+            const lastAction = (current ? engine.currentActions : b.actions).at(-1)
             const sample = (
               b.id === engine.currentBranchId
                 ? b.trajectory.filter((s) => s.tick <= engine.state.tick)
                 : b.trajectory
             ).at(-1)
-            const distance = sample
+            const distance = current ? engine.state.goalDistance : sample
               ? Math.hypot(
                   sample.position[0] - engine.state.goal[0],
                   sample.position[2] - engine.state.goal[2],
@@ -132,9 +134,9 @@ export function Timeline({
                     : say(locale, '· recorded', '· kayıtlı')}
                 </span>
                 <strong>
-                  {b.actions.at(-1)
+                  {lastAction
                     ? actionName(
-                        b.actions.at(-1)!.action,
+                        lastAction.action,
                         locale,
                         engine.state.scenario,
                       )

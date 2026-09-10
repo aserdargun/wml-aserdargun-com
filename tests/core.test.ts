@@ -594,3 +594,23 @@ describe('playback scheduling across rendering speeds', () => {
     expect(engine.state.tick).toBe(16)
   })
 })
+
+describe('audit regressions: retained evidence', () => {
+  it('retains a paused partial tick before rewinding and restores its exact continuation', async () => {
+    const engine = await create('surprise')
+    engine.predict()
+    engine.act('wait')
+    engine.step(7)
+    const paused = structuredClone(engine.state)
+    engine.rewind(0)
+    engine.fork()
+    engine.switchBranch('branch-0')
+    expect(engine.state).toEqual(paused)
+    const reference = await create('surprise')
+    reference.act('wait')
+    reference.step(19)
+    engine.step(12)
+    expect(engine.state).toEqual(reference.state)
+  })
+
+})

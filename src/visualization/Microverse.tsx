@@ -180,7 +180,7 @@ export function Microverse(props: SceneProps) {
       data-camera-view={props.cameraView}
       data-lens={props.lens}
       data-forecast-time={props.forecastTime.toFixed(1)}
-      role="img"
+      role="group"
       aria-label={say(
         props.locale,
         'Interactive 3D world. Use the labelled controls and state table for a text alternative.',
@@ -192,7 +192,7 @@ export function Microverse(props: SceneProps) {
       ) : (
         <CanvasBoundary fallback={summary}>
           <Canvas
-            shadows
+            shadows="percentage"
             frameloop="demand"
             gl={{
               antialias: !capability.software,
@@ -206,7 +206,7 @@ export function Microverse(props: SceneProps) {
               far: 100,
             }}
             onCreated={({ gl }) => {
-              gl.shadowMap.type = THREE.PCFSoftShadowMap
+              gl.shadowMap.type = THREE.PCFShadowMap
               gl.toneMapping = THREE.ACESFilmicToneMapping
               gl.toneMappingExposure = 0.94
               gl.domElement.addEventListener('webglcontextlost', () =>

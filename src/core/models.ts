@@ -50,7 +50,7 @@ export function predictFromBelief(
     (o) => o.kind === 'obstacle' || o.kind === 'panel',
   )
   const horizonTicks =
-    Math.round(Math.min(20, Math.max(0.1, horizon)) / FIXED_DT / SAMPLE_EVERY) *
+    Math.round(Math.min(20, Math.max(0.1, Number.isFinite(horizon) ? horizon : 10)) / FIXED_DT / SAMPLE_EVERY) *
     SAMPLE_EVERY
   const friction = model === 'biased' ? 0.9 : context.parameters.friction
   const slope =

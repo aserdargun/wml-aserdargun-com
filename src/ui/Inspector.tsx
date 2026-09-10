@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { ArrowUpRight, Check, Eye, EyeOff } from 'lucide-react'
 import type { LabEngine, ModelId, ActionId } from '../core'
 import { actionName, objectName, say, type Locale } from './i18n'
+import { navigateTabs } from './tabNavigation'
 interface Props {
   engine: LabEngine
   locale: Locale
@@ -42,6 +43,10 @@ export function Inspector({
           <button
             key={t}
             role="tab"
+            id={`inspector-${t}`}
+            aria-controls="inspector-panel"
+            tabIndex={tab === t ? 0 : -1}
+            onKeyDown={navigateTabs}
             aria-selected={tab === t}
             onClick={() => setTab(t)}
           >
@@ -55,7 +60,7 @@ export function Inspector({
           </button>
         ))}
       </div>
-      <div className="inspector-content" role="tabpanel">
+      <div className="inspector-content" id="inspector-panel" role="tabpanel" aria-labelledby={`inspector-${tab}`}>
         {tab === 'futures' && (
           <>
             <div className="section-label">
@@ -96,6 +101,7 @@ export function Inspector({
                     className={`candidate ${engine.selectedAction === p.action ? 'selected' : ''}`}
                     key={p.id}
                     onClick={() => choose(p.action)}
+                    disabled={!p.samples.length}
                     aria-pressed={engine.selectedAction === p.action}
                   >
                     <div className="candidate-top">
@@ -108,7 +114,9 @@ export function Inspector({
                     </div>
                     <div className="candidate-details">
                       <span className={p.collision ? 'collision-tag' : ''}>
-                        {p.collision
+                        {!p.samples.length
+                          ? say(locale, 'Object not observed', 'Nesne gözlenmedi')
+                          : p.collision
                           ? say(
                               locale,
                               'Collision predicted',
@@ -128,11 +136,11 @@ export function Inspector({
                       </span>
                       <span>
                         {say(locale, 'Cost', 'Maliyet')}{' '}
-                        <b>{p.score.toFixed(2)}</b>
+                        <b>{Number.isFinite(p.score) ? p.score.toFixed(2) : '—'}</b>
                       </span>
                     </div>
                     <span className="candidate-distance">
-                      {p.goalDistance.toFixed(2)} m{' '}
+                      {Number.isFinite(p.goalDistance) ? p.goalDistance.toFixed(2) : '—'} m{' '}
                       {say(locale, 'from target', 'hedef mesafesi')}
                     </span>
                   </button>
