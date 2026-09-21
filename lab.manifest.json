@@ -12,8 +12,8 @@
     "tr": "Gözle. Hayal et. Tahmin et. Uygula. Öğren."
   },
   "guidingQuestion": {
-    "en": "How does an imagined route differ from its executed outcome?",
-    "tr": "Hayal edilen rota, yürütülen sonuçtan nasıl ayrılır?"
+    "en": "How does a prediction change when beliefs or actions change?",
+    "tr": "İnanç veya eylem değiştiğinde tahmin nasıl değişir?"
   },
   "concepts": [
     "concept:world-model",

@@ -2,7 +2,7 @@
 
 **Observe. Imagine. Predict. Act. Learn.**
 
-An interactive EN/TR scientific laboratory for experiencing observation, belief, prediction, planning and counterfactual simulation. WFM is the research parent; WML is the experiment surface. Intended domain: `wml.aserdargun.com`.
+An interactive EN/TR scientific laboratory for experiencing observation, belief, prediction, planning and counterfactual simulation. WFM is the research parent; WML is the experiment surface. Canonical address: [wml.aserdargun.com](https://wml.aserdargun.com/). Part of the [aserdargun.com learning system](https://aserdargun.com/applications/).
 
 ## Run
 
@@ -36,7 +36,7 @@ Playwright requires its Chromium browser (`npx playwright install chromium` if m
 
 After **Plan** or **Predict**, choose **Compare models**. Constant velocity, simple dynamics and biased dynamics reuse the same saved belief, action and horizon. Run the action to reveal three measured error curves. Inspect an earlier or future forecast time without moving reality: unexecuted outcomes and errors remain blank. A model's RMSE ranking applies only to the recorded portion of this experiment.
 
-Choose **Sample assumptions** to inspect nine deterministic simple-dynamics paths. The slider changes declared bounds for initial X velocity, drive speed, drag and friction, one parameter at a time. Move the forecast-time cursor to see outlined positions and numeric x/y/z ranges at the same instant: different speeds can share a path. Zero range produces identical forecasts. These are sensitivity samples, not probabilities, confidence intervals or a complete exploration of combinations. The real world's settings stay unchanged.
+Choose **Sample assumptions** to inspect nine deterministic simple-dynamics paths. The slider changes declared bounds for initial X velocity, drive speed, drag and friction, one parameter at a time. Move the forecast-time cursor to see outlined positions and numeric x/y/z ranges at the same instant: different speeds can share a path. Zero range produces identical forecasts. These are sensitivity samples, not probabilities, confidence intervals or a complete exploration of combinations. The reference simulator’s settings stay unchanged.
 
 **Export evidence · JSON** saves the frozen starting belief and public model context, all forecast samples and parameters, executed samples through the current cursor, measured errors and branch metadata. It is an evidence report, not an importable replay file or a physics snapshot. Restore a retained branch by clicking its timeline record. Contextual term explanations and scenario-specific interpretation questions are available in both languages.
 
@@ -65,7 +65,7 @@ See [architecture](docs/ARCHITECTURE.md), [scientific integrity](docs/SCIENTIFIC
 
 ## Deployment
 
-Production URL: [WML on Azure](https://blue-dune-0802ac003.3.azurestaticapps.net). Source: [aserdargun/wml-aserdargun-com](https://github.com/aserdargun/wml-aserdargun-com).
+Canonical URL: [WML](https://wml.aserdargun.com/). Azure origin: [WML on Azure](https://blue-dune-0802ac003.3.azurestaticapps.net). Source: [aserdargun/wml-aserdargun-com](https://github.com/aserdargun/wml-aserdargun-com).
 
 `dist/` is a static web application. `public/staticwebapp.config.json` provides Azure Static Web Apps fallback, MIME and header configuration. The production workflow in `.github/workflows/deploy-swa-wml-aserdargun-com.yml` runs locked installation, core tests, build, artifact verification and browser acceptance tests before uploading the prebuilt artifact. Pushes to `main` and manual dispatch share one serialized deployment queue.
 
@@ -75,14 +75,16 @@ Each build writes `dist/release.json` with its commit, build timestamp and artif
 
 The physics compatibility package embeds WebAssembly, producing a ~2.23 MB JavaScript chunk (~0.84 MB gzip). Three.js and rendering helpers are ~1.16 MB (~0.32 MB gzip). These are measured build costs; lower-end mobile performance and other browser engines are not certified.
 
-## Verified in this run
+## Content and validation
 
-On 2026-09-08: production build and **28 core tests passed**. All **12 browser acceptance flows passed against the production build**: plan/act/rewind/alternate collision branch, occlusion memory, ten-chapter guide, Turkish mobile/keyboard controls, surprise error, common-origin model comparison with future outcomes blank, nine-sample sensitivity and JSON export, switching between successful/colliding branches with their own evidence, Turkish term help without paused-state mutation, spatial camera and preview state preservation, execution of an on-canvas future with a changed rendered world, and Turkish spatial controls with reduced motion at 390px. Camera changes, stage expansion and forecast-time inspection preserve the experiment's clock, goal distance and branch count.
+All four scenarios, ten guided chapters, term explanations, interpretation questions and experiment metadata are available in English and Turkish. The guide title, closing motto and document metadata follow the selected locale. Research links use WFM’s actual localized concept slugs. The footer connects WML back to the root learning system without leaving or resetting the current experiment.
 
-The production flows reported no page exceptions or console errors. Desktop 1440×1040 and mobile 390×844 screenshots were visually inspected, including the studio, overhead and close-up views, spatial futures, comparison charts, sampled positions and the native help overlay. Export checks verified forecast provenance, zero-range equality, branch-specific histories and exclusion of future actual samples after rewind. The in-app browser also completed Plan → Compare models → Act → target. Other browser engines and physical mobile hardware were not tested.
+Belief updates correct the estimated state, not the saved forecast or predictor parameters. Memory weight describes freshness, not probability. Error evaluation uses recorded simulator positions, including hidden objects; agent sensing remains a separate information channel.
+
+Before handoff, run `npm test`, `npm run build`, `npm run verify:artifact`, `npm run test:e2e` and `git diff --check`. Browser acceptance covers desktop 1440×1040 and mobile 390×844, the plan–act–rewind–branch loop, all localized research links, guided learning, shared metadata, evidence export and preservation of clock/goal/branches during inspection. Test results describe the checkout actually tested; they do not establish production deployment or certify other browsers and physical mobile hardware.
 
 ## ILS compatibility
 
-WML consumes the canonical ILS 0.1 core and UI archives from `vendor/`, with lockfile integrity and no sibling checkout dependency. `lab.manifest.json` describes all four existing experiments; the ten World Model 101 chapters are adapted directly from the existing bilingual curriculum. The shared learning panel follows the selected experiment and exposes assumptions, simulated reference trajectories, estimated forecasts and calculated errors. Physics, predictors and branch state remain in WML.
+WML consumes ILS core and UI package version 0.2.0 with schema 0.1 contracts, using archives from `vendor/`, with lockfile integrity and no sibling checkout dependency. `lab.manifest.json` describes all four existing experiments; the ten World Model 101 chapters are adapted directly from the existing bilingual curriculum. The shared learning panel follows the selected experiment and exposes assumptions, simulated reference trajectories, estimated forecasts and calculated errors. Physics, predictors and branch state remain in WML.
 
 `?scenario=planning|dynamics|occlusion|surprise` opens an existing experiment; `?lesson=world-model-101` opens the guide. `?lang=en|tr` selects the initial language. No incoming cross-lab payload profile is supported: `ils` parameters are ignored without affecting runtime state. Related HEX/WFM links convey conceptual continuity only. Play/pause, step (six fixed ticks), reset and rewind retain their existing semantics; rewind restores the saved decision point.

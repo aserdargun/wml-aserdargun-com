@@ -944,16 +944,29 @@ button:not(:disabled):hover {
   align-items: center;
 }
 .lab-footer p {
-  font-size: 9px;
-  color: #86907c;
+  font-size: 11px;
+  color: var(--muted);
   line-height: 1.6;
   max-width: 620px;
-  margin: 0;
+  margin: 0 0 8px;
 }
 .lab-footer span {
   font-size: 9px;
   color: #647558;
-  white-space: nowrap;
+}
+.lab-footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+.lab-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-size: 11px;
+  color: var(--ink);
+  text-underline-offset: 4px;
 }
 .guided {
   display: flex;

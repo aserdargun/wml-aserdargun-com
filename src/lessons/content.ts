@@ -14,10 +14,10 @@ export const scenarioContent = (locale: Locale) => [
     ),
     description: say(
       locale,
-      'Move the blue cube to the target. Imagine four actions, compare their outcomes, then make one future real.',
-      'Mavi küpü hedefe götür. Dört eylemi hayal et, sonuçlarını karşılaştır ve bir geleceği gerçeğe dönüştür.',
+      'Move the blue cube to the target. Predict four actions, compare their outcomes, then execute one in the simulator.',
+      'Mavi küpü hedefe götür. Dört eylemin sonucunu tahmin et, karşılaştır ve birini simülatörde uygula.',
     ),
-    topic: 'action-conditioning',
+    topic: 'action-conditioning' as const,
     questions: [
       say(
         locale,
@@ -36,8 +36,8 @@ export const scenarioContent = (locale: Locale) => [
       ),
       say(
         locale,
-        'An approximate controller model rolls out four routes and estimates their cost.',
-        'Yaklaşık bir denetleyici modeli dört rotayı ilerletir ve maliyetlerini hesaplar.',
+        'The selected predictor evaluates four commands from the same belief. Constant velocity ignores commands; the dynamics models approximate their effects.',
+        'Seçilen model, aynı inançtan dört komutu değerlendirir. Sabit hız modeli komutları yok sayar; dinamik modeller etkilerini yaklaşık hesaplar.',
       ),
       say(
         locale,
@@ -62,10 +62,10 @@ export const scenarioContent = (locale: Locale) => [
     ),
     description: say(
       locale,
-      'Release a ball on a ramp. Compare a predicted path with actual physics. Change friction or the model and repeat.',
-      'Rampadaki topu serbest bırak. Tahmin edilen yolu gerçek fizikle karşılaştır. Sürtünmeyi veya modeli değiştirip tekrarla.',
+      'Release a ball on a ramp. Compare a predicted path with the simulated outcome. Change friction or the model and repeat.',
+      'Rampadaki topu serbest bırak. Tahmin edilen yolu simülasyon sonucuyla karşılaştır. Sürtünmeyi veya modeli değiştirip tekrarla.',
     ),
-    topic: 'world-model',
+    topic: 'world-model' as const,
     questions: [
       say(
         locale,
@@ -84,8 +84,8 @@ export const scenarioContent = (locale: Locale) => [
       ),
       say(
         locale,
-        'It approximates motion using velocity, gravity and a friction assumption.',
-        'Hızı, yerçekimini ve bir sürtünme varsayımını kullanarak hareketi yaklaşık hesaplar.',
+        'Constant velocity extrapolates motion without forces. The dynamics models add approximate gravity, friction and contact assumptions.',
+        'Sabit hız modeli hareketi kuvvetleri hesaba katmadan ileri taşır. Dinamik modeller yaklaşık yerçekimi, sürtünme ve temas varsayımları ekler.',
       ),
       say(
         locale,
@@ -105,7 +105,7 @@ export const scenarioContent = (locale: Locale) => [
       'A moving ball passes behind a panel. Switch between what exists, what is seen, and what is remembered.',
       'Hareketli bir top perdenin arkasından geçer. Var olan, görülen ve hatırlanan arasında geçiş yap.',
     ),
-    topic: 'latent-state',
+    topic: 'latent-state' as const,
     questions: [
       say(
         locale,
@@ -124,8 +124,8 @@ export const scenarioContent = (locale: Locale) => [
       ),
       say(
         locale,
-        'It extrapolates the last observed velocity. Confidence decays with time unseen.',
-        'Son gözlenen hızı ileri taşır. Görülmeyen süre arttıkça güven azalır.',
+        'Memory extrapolates the last observed velocity. Its freshness weight decays while hidden; it is not a probability.',
+        'Bellek, son gözlenen hızı ileri taşır. Gizli kalma süresi arttıkça güncellik ağırlığı azalır; bu bir olasılık değildir.',
       ),
       say(
         locale,
@@ -153,7 +153,7 @@ export const scenarioContent = (locale: Locale) => [
       'Predict the ball’s path. Start the world, then apply an unexpected impulse. Watch evidence correct the belief.',
       'Topun yolunu tahmin et. Dünyayı başlat, sonra beklenmedik bir itki uygula. Yeni kanıtın inancı düzeltmesini izle.',
     ),
-    topic: 'uncertainty',
+    topic: 'uncertainty' as const,
     questions: [
       say(
         locale,
@@ -177,8 +177,8 @@ export const scenarioContent = (locale: Locale) => [
       ),
       say(
         locale,
-        'A surprising event outside the field of view remains unknown until it is observed.',
-        'Görüş alanı dışındaki sürpriz, gözlenene dek bilinmez.',
+        'An unseen intervention cannot update belief until new evidence arrives. The saved forecast stays unchanged until you predict again.',
+        'Görülmeyen müdahale, yeni kanıt gelene kadar inancı güncelleyemez. Yeniden tahmin üretene kadar kayıtlı tahmin değişmez.',
       ),
     ],
   },
@@ -270,8 +270,8 @@ export const chapters = (
     title: say(l, 'Error', 'Hata'),
     text: say(
       l,
-      'Compare the solid actual trace with the dashed prediction. Error is measured, never a decorative number.',
-      'Sürekli gerçek izi kesikli tahminle karşılaştır. Hata ölçülür; dekoratif bir sayı değildir.',
+      'Compare the solid simulated trace with the dashed prediction. Error is calculated from positions at matching times, including hidden objects; these reference positions never feed the predictor.',
+      'Sürekli simülasyon izini kesikli tahminle karşılaştır. Hata, gizli nesneler dahil eşleşen zamanlardaki konumlardan hesaplanır; referans konumlar tahmin modeline aktarılmaz.',
     ),
     lens: 'imagination',
     task: 'error',
@@ -280,8 +280,8 @@ export const chapters = (
     title: say(l, 'Update', 'Güncelle'),
     text: say(
       l,
-      'Observe again. Rewind, branch, choose another action and compare. World model ≠ world. Prediction ≠ certainty.',
-      'Yeniden gözle. Geri sar, dal oluştur, başka eylem seç ve karşılaştır. Dünya modeli ≠ dünya. Tahmin ≠ kesinlik.',
+      'New observations correct belief, not the saved forecast or model parameters. Rewind, branch, predict and try another action. World model ≠ world. Prediction ≠ certainty.',
+      'Yeni gözlem inancı düzeltir; kayıtlı tahmini veya model parametrelerini değiştirmez. Geri sar, dal oluştur, tahmin üret ve başka eylem dene. Dünya modeli ≠ dünya. Tahmin ≠ kesinlik.',
     ),
     lens: 'belief',
     task: 'view',

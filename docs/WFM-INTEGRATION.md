@@ -1,28 +1,36 @@
-# WFM and the Aserdargun ecosystem
+# WFM and the Aserdargun learning system
 
-WFM supplies research, papers, concepts and evidence. WML supplies interactive experiments, approximate prediction, planning and counterfactual simulation. WML does not duplicate WFM's curriculum or modify its repository.
+WML is the interactive experiment laboratory under WFM (World Models Atlas) in the aserdargun.com learning system. WFM supplies research, papers, concepts and evidence; WML makes observation, belief, approximate prediction, planning and counterfactual simulation explorable. Its three hand-coded predictors are educational models, not trained foundation world models or evidence of real-world transfer.
 
-## Experiment metadata
+## Experiment-to-research links
 
-| WML experiment  | Concept                                                   | Linked WFM route                   |
-| --------------- | --------------------------------------------------------- | ---------------------------------- |
-| Plan a path     | Action-conditioned prediction and planning                | `/en/concepts/action-conditioning` |
-| Predict motion  | World model and dynamics                                  | `/en/concepts/world-model`         |
-| See the unseen  | Internal representation, memory and partial observability | `/en/concepts/latent-state`        |
-| Meet a surprise | Prediction limitations                                    | `/en/concepts/uncertainty`         |
+| WML experiment | Concept | English WFM route | Turkish WFM route |
+| --- | --- | --- | --- |
+| Plan a path / Bir yol planla | Action-conditioned prediction and planning | `/en/concepts/action-conditioning` | `/tr/concepts/eylem-kosullama` |
+| Predict motion / Hareketi tahmin et | World model and dynamics | `/en/concepts/world-model` | `/tr/concepts/dunya-modeli` |
+| See the unseen / Görünmeyeni izle | Internal representation and memory | `/en/concepts/latent-state` | `/tr/concepts/gizil-durum` |
+| Meet a surprise / Bir sürprizle karşılaş | Prediction limitations | `/en/concepts/uncertainty` | `/tr/concepts/belirsizlik` |
 
-The routes follow the current sibling WFM catalog and route implementation. Action-conditioning and latent-state endpoints returned HTTP 200 on 2026-09-08. Links are explicitly marked EN in both locales. WML's local experience remains bilingual. A research link opens a separate tab; it does not transmit simulation state.
+`src/lessons/research.ts` maps stable topic IDs to WFM’s localized slugs. Changing only the language prefix would produce missing-record pages for Turkish concepts. WML uses structured belief; linking to latent-state research does not imply learned latent features. Likewise, sensitivity probes are not calibrated uncertainty estimates.
 
-## Future portfolio placement
+Research and portfolio links follow WML’s selected language and open a separate tab, preserving the local experiment. They transmit no simulation state. The footer explains WML’s role and links to the root site and its application map.
 
-| Application | Relationship to WML                                                                   |
-| ----------- | ------------------------------------------------------------------------------------- |
-| WFM         | Research/evidence parent                                                              |
-| ITL / PDT   | Digital-twin interpretation and correspondence to physical assets                     |
-| ENG / HEX   | Embodiment and physical AI; manipulation belongs there rather than inside WML's scope |
-| GPU / GEX   | Execution and compute context for future learned adapters                             |
-| ANT         | Collective intelligence as a distinct neighboring experimental discipline             |
+## Portfolio placement
 
-Future root integration should use the portfolio's canonical data/renderer workflow and distinguish research from interactive laboratory. Do not imply WML replaces WFM, or that ANT's collective intelligence is equivalent to a world model. The current run only creates WML; it makes no root-site or sibling-app changes.
+The root portfolio already registers WML as a public bilingual lab with `parentApp: wfm`, the address `https://wml.aserdargun.com/`, and an explicit hand-coded-predictor boundary. Its source of truth is `data/living-system.json` in the sibling `aserdargun-com` repository. Update that canonical data and regenerate its dependent pages if the relationship changes; do not edit generated HTML or `portfolio.json` directly.
 
-Target custom domain: `wml.aserdargun.com`; custom-domain provisioning remains separate. The GitHub-backed deployment targets the Free `swa-wml-aserdargun-com` in West Europe under `aserdargun subscription 3`. Verify the generated Azure hostname, successful workflow, matching `release.json` commit and asset hashes, and live browser behavior for every release. See the README for publication commands.
+| Application | Relationship to WML |
+| --- | --- |
+| WFM | Research and evidence parent |
+| ITL / PDT | Neighboring digital-twin interpretation and correspondence to physical assets |
+| ENG / HEX | Neighboring embodiment and physical-AI learning; the shared panel links to HEX |
+| GPU / GEX | Compute context for potential future learned adapters |
+| ANT | Collective intelligence as a distinct neighboring experimental discipline |
+
+These are educational relationships, not runtime integrations. WML does not load another laboratory’s model or receive its experiment state. Its ILS manifest and learning panel use the shared packages, while physics, predictors and branch evidence remain WML-owned. Incoming cross-lab payloads are not supported.
+
+## Publication boundary
+
+The canonical address is `https://wml.aserdargun.com/`; the Azure origin is `https://blue-dune-0802ac003.3.azurestaticapps.net/`. The existing GitHub workflow targets Free `swa-wml-aserdargun-com` in `rg-wml-aserdargun-com`, West Europe. Content edits remain local unless publication is authorized.
+
+For every authorized release, verify the workflow, matching `release.json` commit, asset hashes and live browser behavior. DNS/TLS readiness and deployed code identity are separate checks. See the README for validation commands; a local content audit does not establish a new production release.

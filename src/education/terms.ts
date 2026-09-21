@@ -23,8 +23,8 @@ export const term = (id: TermId, l: Locale) =>
       ),
       example: say(
         l,
-        'In WML, the predictor starts from belief and integrates approximate dynamics. Rapier separately produces the observed outcome.',
-        'WML’de tahminci inançtan başlar ve yaklaşık dinamikleri ilerletir. Gözlenen sonucu ayrı olarak Rapier üretir.',
+        'WML predictors start from belief: one extrapolates velocity, two approximate dynamics. Rapier separately produces the simulated reference outcome.',
+        'WML modelleri inançtan başlar: biri hızı ileri taşır, ikisi dinamikleri yaklaşık hesaplar. Simülasyonun referans sonucunu ayrı olarak Rapier üretir.',
       ),
     },
     belief: {
@@ -49,8 +49,8 @@ export const term = (id: TermId, l: Locale) =>
       ),
       example: say(
         l,
-        'A 10 s forecast made at t = 2 s ends at t = 12 s. Error can only be measured where actual observations exist.',
-        't = 2 s’de yapılan 10 s’lik tahmin t = 12 s’de biter. Hata yalnızca gerçek gözlemlerin bulunduğu zamanlarda ölçülebilir.',
+        'A 10 s forecast made at t = 2 s ends at t = 12 s. Error requires recorded simulator samples at matching times, even when the agent cannot see the object.',
+        't = 2 s’de yapılan 10 s’lik tahmin t = 12 s’de biter. Hata, ajan nesneyi göremese de eşleşen zamanlarda kaydedilmiş simülatör örneklerini gerektirir.',
       ),
     },
     rmse: {
@@ -80,7 +80,7 @@ export const term = (id: TermId, l: Locale) =>
       ),
     },
     counterfactual: {
-      name: say(l, 'Counterfactual branch', 'Karşı-olgusal dal'),
+      name: say(l, 'Counterfactual branch', 'Karşıolgusal dal'),
       meaning: say(
         l,
         'A different action executed from a restored simulation state, with the previous outcome retained.',

@@ -11,8 +11,8 @@
       "tr": "Hayal edilen rota, yürütülen sonuçtan nasıl ayrılır?"
     },
     "description": {
-      "en": "Move the blue cube to the target. Imagine four actions, compare their outcomes, then make one future real.",
-      "tr": "Mavi küpü hedefe götür. Dört eylemi hayal et, sonuçlarını karşılaştır ve bir geleceği gerçeğe dönüştür."
+      "en": "Move the blue cube to the target. Predict four actions, compare their outcomes, then execute one in the simulator.",
+      "tr": "Mavi küpü hedefe götür. Dört eylemin sonucunu tahmin et, karşılaştır ve birini simülatörde uygula."
     },
     "concepts": [
       "concept:world-model",
@@ -70,8 +70,8 @@
       "tr": "Model varsayımları zaman içindeki tahmin hatasını nasıl etkiler?"
     },
     "description": {
-      "en": "Release a ball on a ramp. Compare a predicted path with actual physics. Change friction or the model and repeat.",
-      "tr": "Rampadaki topu serbest bırak. Tahmin edilen yolu gerçek fizikle karşılaştır. Sürtünmeyi veya modeli değiştirip tekrarla."
+      "en": "Release a ball on a ramp. Compare a predicted path with the simulated outcome. Change friction or the model and repeat.",
+      "tr": "Rampadaki topu serbest bırak. Tahmin edilen yolu simülasyon sonucuyla karşılaştır. Sürtünmeyi veya modeli değiştirip tekrarla."
     },
     "concepts": [
       "concept:world-model",
@@ -184,8 +184,8 @@
       "tr": "Bir sürprizle karşılaş"
     },
     "guidingQuestion": {
-      "en": "How does new observation correct a prediction after an intervention?",
-      "tr": "Müdahaleden sonra yeni gözlem tahmini nasıl düzeltir?"
+      "en": "How does new observation correct belief after an intervention while the saved forecast stays unchanged?",
+      "tr": "Müdahaleden sonra kayıtlı tahmin değişmeden kalırken yeni gözlem inancı nasıl düzeltir?"
     },
     "description": {
       "en": "Predict the ball’s path. Start the world, then apply an unexpected impulse. Watch evidence correct the belief.",

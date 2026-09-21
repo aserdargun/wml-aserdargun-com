@@ -66,6 +66,12 @@ export default function App() {
   }, [])
   useEffect(() => {
     document.documentElement.lang = locale
+    document.title = say(locale, 'WML - World Model Laboratory', 'WML - Dünya Modeli Laboratuvarı')
+    document.querySelector('meta[name="description"]')?.setAttribute('content', say(
+      locale,
+      'Explore observation, belief, prediction and planning in WFM’s interactive laboratory. Compare three hand-coded predictors against a simulated world.',
+      'WFM’nin etkileşimli laboratuvarında gözlemi, inancı, tahmini ve planlamayı keşfet. Elle yazılmış üç tahmin modelini simüle edilen dünyayla karşılaştır.',
+    ))
     try {
       localStorage.setItem('wml.locale', locale)
     } catch {
@@ -229,7 +235,7 @@ export default function App() {
             className={lesson !== null ? 'nav-active' : ''}
             onClick={startLesson}
           >
-            World Model 101
+            {manifest.lessons![0].title[locale]}
             <span className="nav-dot" />
           </button>
         </nav>
@@ -334,7 +340,7 @@ export default function App() {
                 )}
                 {lesson === 9 && (
                   <b className="guide-finish">
-                    Observe. Imagine. Predict. Act. Learn.
+                    {manifest.tagline[locale]}
                   </b>
                 )}
               </div>
@@ -462,8 +468,8 @@ export default function App() {
                         : message?.[locale]) ||
                   say(
                     locale,
-                    'Start with Plan. Nothing moves until you act.',
-                    'Planla ile başla. Eyleme geçene kadar hiçbir şey hareket etmez.',
+                    'Start with Plan. Act executes a command; Play or Step advances the simulation.',
+                    'Planla ile başla. Uygula bir komutu yürütür; Oynat veya Adımla simülasyonu ilerletir.',
                   )}
               </div>
               {(scenario.id === 'surprise' || scenario.id === 'occlusion') && (
@@ -549,14 +555,31 @@ export default function App() {
           />
           <LabShell manifest={manifest} experiment={experiments.find(e => e.id === scenario.id)!} locale={locale} />
           <footer className="lab-footer">
-            <p>
-              {say(
-                locale,
-                'WML uses simplified educational predictors, not learned foundation world models.',
-                'WML, öğrenilmiş temel dünya modelleri yerine basitleştirilmiş eğitsel tahmin modelleri kullanır.',
-              )}
-            </p>
-            <span>Observe. Imagine. Predict. Act. Learn.</span>
+            <div>
+              <p>
+                {say(
+                  locale,
+                  'Part of the aserdargun.com learning system. WFM connects research and evidence; WML lets you test ideas through simulation.',
+                  'aserdargun.com öğrenme sisteminin parçası. WFM araştırma ve kanıtları bir araya getirir; WML fikirleri simülasyonla denemeni sağlar.',
+                )}
+              </p>
+              <p>
+                {say(
+                  locale,
+                  'WML uses simplified educational predictors, not learned foundation world models.',
+                  'WML, öğrenilmiş temel dünya modelleri yerine basitleştirilmiş eğitsel tahmin modelleri kullanır.',
+                )}
+              </p>
+              <span>{manifest.tagline[locale]}</span>
+            </div>
+            <nav aria-label={say(locale, 'Learning system links', 'Öğrenme sistemi bağlantıları')}>
+              <a href={`https://aserdargun.com/${locale === 'tr' ? 'tr/' : ''}`} target="_blank" rel="noreferrer">
+                aserdargun.com <ArrowUpRight size={14} />
+              </a>
+              <a href={`https://aserdargun.com/${locale === 'tr' ? 'tr/' : ''}applications/`} target="_blank" rel="noreferrer">
+                {say(locale, 'Application map', 'Uygulama haritası')} <ArrowUpRight size={14} />
+              </a>
+            </nav>
           </footer>
         </main>
       </div>

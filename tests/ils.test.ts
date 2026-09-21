@@ -11,7 +11,13 @@ describe('ILS WML adapter', () => {
     for (const e of experiments) {
       expect(validateExperiment(e).ok).toBe(true)
       expect(e.config?.scenarioId).toBe(e.id)
-      for (const locale of ['en', 'tr'] as const) expect(e.title[locale]).toBe(scenarioContent(locale).find(s => s.id === e.id)!.name)
+      for (const locale of ['en', 'tr'] as const) {
+        const content = scenarioContent(locale).find(s => s.id === e.id)!
+        expect(e.title[locale]).toBe(content.name)
+        expect(e.description?.[locale]).toBe(content.description)
+        expect(e.learningObjectives?.[0][locale]).toBe(content.questions[2])
+        expect(e.observations?.[0].explanation[locale]).toBe(content.questions[1])
+      }
     }
     expect(manifest.evidence.find(e => e.id === 'error')?.calculatedFrom).toEqual(['trajectory', 'forecast'])
     expect(manifest.evidence.some(e => e.kind === 'measured' || e.verificationStatus === 'verified')).toBe(false)

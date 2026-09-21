@@ -4,6 +4,7 @@ import { ArrowUpRight, Check, Eye, EyeOff } from 'lucide-react'
 import type { LabEngine, ModelId, ActionId } from '../core'
 import { actionName, objectName, say, type Locale } from './i18n'
 import { navigateTabs } from './tabNavigation'
+import { researchUrl, type ResearchTopic } from '../lessons/research'
 interface Props {
   engine: LabEngine
   locale: Locale
@@ -12,7 +13,7 @@ interface Props {
   tab: 'futures' | 'state' | 'learn'
   setTab: (tab: 'futures' | 'state' | 'learn') => void
   questions: string[]
-  topic: string
+  topic: ResearchTopic
 }
 export function Inspector({
   engine,
@@ -84,7 +85,7 @@ export function Inspector({
               <div className="empty-futures">
                 <span className="branch-glyph">⌁</span>
                 <p>
-                  {say(locale, 'The world is paused.', 'Dünya duraklatıldı.')}
+                  {say(locale, 'No forecast yet.', 'Henüz tahmin yok.')}
                 </p>
                 <span>
                   {say(
@@ -279,8 +280,8 @@ export function Inspector({
               <p>
                 {say(
                   locale,
-                  'Distance from the previous estimate to the newest visible measurement.',
-                  'Önceki tahmin ile en yeni görünür ölçüm arasındaki mesafe.',
+                  'Largest 3D correction between a propagated moving-object estimate and its new visible measurement at this observation.',
+                  'Bu gözlemde, hareketli nesnelerin ileri taşınan tahminleri ile yeni görünür ölçümleri arasındaki en büyük 3D düzeltme.',
                 )}
               </p>
             </div>
@@ -319,8 +320,8 @@ export function Inspector({
                   {engine.belief.lastCorrection.error.toFixed(3)} m ·{' '}
                   {say(
                     locale,
-                    'correction at observation (x, z)',
-                    'gözlem anındaki düzeltme (x, z)',
+                    '3D correction; coordinates above show x, z in metres',
+                    '3D düzeltme; yukarıdaki koordinatlar metre cinsinden x, z',
                   )}
                 </p>
               </div>
@@ -341,14 +342,14 @@ export function Inspector({
             ))}
             <a
               className="research-link"
-              href={`https://wfm.aserdargun.com/en/concepts/${topic}`}
+              href={researchUrl(topic, locale)}
               target="_blank"
               rel="noreferrer"
             >
               {say(
                 locale,
-                'Explore the concept in WFM (EN)',
-                'Kavramı WFM’de incele (EN)',
+                'Explore the concept in WFM',
+                'Kavramı WFM’de incele',
               )}
               <ArrowUpRight size={15} />
             </a>
