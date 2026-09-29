@@ -454,7 +454,7 @@ export function AnalysisPanel({
                   const p = analysis.forecastByModel[m].samples[index],
                     error = sample
                       ? errors?.byModel[m].points.find(
-                          (p) => p.tick === sample.tick,
+                          (point) => point.tick === sample.tick,
                         )?.error
                       : undefined
                   const metrics = errors?.byModel[m].metrics

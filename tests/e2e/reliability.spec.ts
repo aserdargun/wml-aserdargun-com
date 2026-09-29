@@ -44,7 +44,8 @@ test('representation and inspector tabs support arrows and Home/End without chan
 
 test('physics and evidence remain usable when WebGL is unavailable and storage is denied', async ({ page }) => {
   await page.addInitScript(() => {
-    const original = HTMLCanvasElement.prototype.getContext
+    // Keep a bound reference: the prototype method is called through Reflect below.
+    const original = HTMLCanvasElement.prototype.getContext.bind(HTMLCanvasElement.prototype)
     HTMLCanvasElement.prototype.getContext = function(this: HTMLCanvasElement, type: string, ...args: unknown[]) {
       if (type.startsWith('webgl') || type === 'experimental-webgl') return null
       return Reflect.apply(original, this, [type, ...args])

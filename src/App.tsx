@@ -180,7 +180,7 @@ export default function App() {
   }
   const done =
     chapter?.task === 'view' ||
-    !!completed[chapter?.task || ''] ||
+    (completed[chapter?.task ?? ''] ?? false) ||
     (chapter?.task === 'error' && (engine?.metrics.comparedSamples || 0) > 10)
   const scenarios = scenarioContent(locale),
     scenario =
