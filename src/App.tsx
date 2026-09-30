@@ -19,6 +19,7 @@ import { Measurements } from './ui/Measurements'
 import { ExperimentControls } from './ui/ExperimentControls'
 import { AnalysisPanel, type AnalysisView } from './ui/AnalysisPanel'
 import { TermHelp } from './education/TermHelp'
+import { ConceptPanel } from './education/ConceptPanel'
 import { Inspector } from './ui/Inspector'
 import { Timeline } from './ui/Timeline'
 import { chapters, scenarioContent, type Lens } from './lessons/content'
@@ -581,6 +582,7 @@ export default function App() {
               </a>
             </nav>
           </footer>
+        <ConceptPanel locale={locale} />
         </main>
       </div>
     </div>

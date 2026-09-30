@@ -2537,3 +2537,16 @@ button.future-beacon:focus-visible {
 .orbit-hint {
   color: #b3c0ad;
 }
+
+/* Concept surface: the four manifest concepts now carry a one-sentence definition. */
+.concept-panel { margin: 32px auto; max-width: 1180px; padding: 0 24px; }
+.concept-panel h2 { margin: 0 0 8px; font-size: 20px; }
+.concept-panel__intro { margin: 0 0 16px; color: var(--muted); font-size: 13px; line-height: 1.6; max-width: 70ch; }
+.concept-list { display: grid; gap: 0; margin: 0; }
+.concept-row { border-top: 1px solid var(--line); }
+.concept-row:last-child { border-bottom: 1px solid var(--line); }
+.concept-row dt button { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; width: 100%; padding: 12px 4px; background: none; border: 0; color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.concept-row dt button:hover { background: rgba(11, 79, 234, 0.05); }
+.concept-row dt code { color: var(--muted); font-size: 11px; }
+.concept-row dd { margin: 0; padding: 0 4px 14px; color: var(--muted); font-size: 13px; line-height: 1.65; max-width: 78ch; }
+.concept-row[data-open="false"] dd { display: none; }

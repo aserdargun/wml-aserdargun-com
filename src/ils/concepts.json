@@ -4,6 +4,10 @@
     "label": {
       "en": "World model",
       "tr": "Dünya modeli"
+    },
+    "body": {
+      "en": "An internal representation used to predict how an environment may change and what an action will produce. This lab ships three hand-coded predictor models; none of them is learned.",
+      "tr": "Bir ortamın gelecekte nasıl değişebileceğini, eylem verildiğinde ne olacağını tahmin etmek için kullanılan iç temsil. Bu laboratuvarda üç elle kodlanmış tahmin modeli vardır; öğrenilmiş bir model değildir."
     }
   },
   {
@@ -11,6 +15,10 @@
     "label": {
       "en": "Partial observability",
       "tr": "Kısmi gözlemlenebilirlik"
+    },
+    "body": {
+      "en": "An observation does not reveal the full state, so a prediction rests on an assumption about what was not seen. Uncertainty therefore enters the model rather than staying outside it.",
+      "tr": "Gözlem tam durumu göstermez; tahmin, görülmeyen durum hakkında bir varsayım üzerine kurulur. Belirsizlik bu yüzden modelin dışına değil, modelin içine girer."
     }
   },
   {
@@ -18,6 +26,10 @@
     "label": {
       "en": "Prediction error",
       "tr": "Tahmin hatası"
+    },
+    "body": {
+      "en": "The distance between the predicted and the realised position. The error is an observation produced by this lab, not a measurement of model quality.",
+      "tr": "Tahmin edilen konum ile gerçekleşen konum arasındaki fark. Hata, modelin nerede yetersiz kaldığını gösteren bir ölçüm değil, bu laboratuvarın elde ettiği bir gözlemdir."
     }
   },
   {
@@ -25,6 +37,10 @@
     "label": {
       "en": "Counterfactual experiment",
       "tr": "Karşıolgusal deney"
+    },
+    "body": {
+      "en": "Imagining the outcome of a plausible action that was not taken, and comparing it with the realised trajectory. A counterfactual outcome is a prediction from the chosen model, not a measurement.",
+      "tr": "Gerçekleşmemiş ama makul bir eylemin sonucunu hayal etme ve bunu gerçek yörüngeyle karşılaştırma. Karşı-olgusal sonuç bir ölçüm değil, seçilen modelin verdiği bir tahmindir."
     }
   }
 ]
