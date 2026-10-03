@@ -8,6 +8,7 @@
     "build": "npm run lint && tsc --noEmit && vite build && node scripts/release.mjs write",
     "lint": "oxlint --type-aware --deny-warnings .",
     "preview": "vite preview --host 127.0.0.1 --port 5188 --strictPort",
+    "preview:release": "node scripts/serve-release.mjs",
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:production": "WML_E2E_PRODUCTION=1 playwright test",

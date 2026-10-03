@@ -24,7 +24,10 @@ export default defineConfig({
     },
   },
   webServer: remoteURL ? undefined : {
-    command: production ? `npm run preview -- --port ${previewPort}` : 'npm run dev',
+    // The production run must serve the artifact with the Azure globalHeaders
+    // applied; `vite preview` omits them, which is how a policy that breaks the
+    // page used to pass CI and fail only on the public site.
+    command: production ? `npm run preview:release -- --port ${previewPort}` : 'npm run dev',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 30000,
