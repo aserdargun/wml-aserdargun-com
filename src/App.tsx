@@ -21,6 +21,7 @@ import { AnalysisPanel, type AnalysisView } from './ui/AnalysisPanel'
 import { TermHelp } from './education/TermHelp'
 import { ConceptPanel } from './education/ConceptPanel'
 import { Inspector } from './ui/Inspector'
+import { worldModelSources } from './lessons/sources'
 import { Timeline } from './ui/Timeline'
 import { chapters, scenarioContent, type Lens } from './lessons/content'
 import { say, type Locale } from './ui/i18n'
@@ -555,6 +556,34 @@ export default function App() {
             touch={touch}
           />
           <LabShell manifest={manifest} experiment={experiments.find(e => e.id === scenario.id)!} locale={locale} />
+          <section className="lab-sources" aria-labelledby="lab-sources-heading">
+            <h2 id="lab-sources-heading">
+              {say(locale, 'Where these ideas come from', 'Bu fikirler nereden geliyor')}
+            </h2>
+            <p className="lab-sources-boundary">
+              {worldModelSources.boundary[locale]}
+            </p>
+            {worldModelSources.sources.map(source => (
+              <article key={source.id}>
+                <h3>
+                  <a href={source.url} rel="noreferrer" target="_blank">
+                    {source.title}
+                  </a>
+                </h3>
+                <p className="lab-sources-published">
+                  {source.published[locale]}
+                </p>
+                <p>{source.establishes[locale]}</p>
+                <p className="lab-sources-differs">
+                  {source.differs[locale]}
+                </p>
+              </article>
+            ))}
+            <p className="lab-sources-checked">
+              {say(locale, 'Sources checked', 'Kaynaklar kontrol edildi')}{' '}
+              {worldModelSources.checkedAt}
+            </p>
+          </section>
           <footer className="lab-footer">
             <div>
               <p>

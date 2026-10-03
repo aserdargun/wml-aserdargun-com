@@ -935,6 +935,57 @@ button:not(:disabled):hover {
   font-size: 11px;
   margin: 15px 0;
 }
+.lab-sources {
+  border-top: 1px solid var(--line);
+  padding: 24px 0 8px;
+  margin-top: 22px;
+}
+.lab-sources h2 {
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--ink);
+  margin: 0 0 8px;
+}
+.lab-sources p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 82ch;
+  margin: 0 0 9px;
+}
+.lab-sources-boundary {
+  margin-bottom: 20px !important;
+}
+.lab-sources article {
+  margin: 0 0 20px;
+  padding-left: 13px;
+  border-left: 2px solid var(--ink);
+}
+.lab-sources h3 {
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.55;
+  margin: 0 0 7px;
+  color: var(--ink);
+}
+.lab-sources h3 a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.lab-sources-published {
+  font-family: monospace;
+  font-size: 10.5px;
+  margin-bottom: 9px;
+}
+.lab-sources-differs {
+  color: var(--ink);
+}
+.lab-sources-checked {
+  font-family: monospace;
+  font-size: 10px;
+  margin: 4px 0 0;
+}
 .lab-footer {
   border-top: 1px solid var(--line);
   padding: 20px 0 26px;
