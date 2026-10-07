@@ -24,10 +24,14 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --legacy-peer-deps
-      - name: Test deterministic core
-        run: npm test
       - name: Type-check and build production artifact
         run: npm run build
+      # The suite asserts against the built artifact as well as the source:
+      # tests/security-headers.test.mjs checks that the policy Azure ships is
+      # the policy the source declares. Building first is what makes those
+      # assertions run at all; testing first skipped every one of them.
+      - name: Test deterministic core
+        run: npm test
       - name: Verify artifact hashes and references
         run: npm run verify:artifact
       - name: Install test browser

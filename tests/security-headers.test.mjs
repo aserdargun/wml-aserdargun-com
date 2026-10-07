@@ -8,6 +8,17 @@ const csp = config.globalHeaders['Content-Security-Policy']
 const project = JSON.parse(readFileSync(resolve('package.json'), 'utf8'))
 const allDependencies = { ...project.dependencies, ...project.devDependencies }
 
+// These assertions read the built artifact rather than the source, because
+// Azure consumes the copy in dist/. An assertion that quietly returns when the
+// artifact is missing reports green while checking nothing, and CI used to run
+// `npm test` before `npm run build`, so every one of them was skipped on a
+// fresh runner and a broken shipped policy passed. The workflow now builds
+// first; this flag makes any remaining skip visible in the report instead of
+// hiding it inside a passing test.
+const hasArtifact = existsSync(resolve('dist/index.html'))
+const builtConfigPath = resolve('dist/staticwebapp.config.json')
+const hasBuiltConfig = existsSync(builtConfigPath)
+
 // A WebAssembly engine in the dependency tree means the page will call
 // WebAssembly.compile/instantiate at runtime. Under a Content-Security-Policy
 // that omits a WASM source the browser refuses to compile the module, the app
@@ -41,14 +52,23 @@ describe('content security policy', () => {
     expect(config.globalHeaders['X-Frame-Options']).toBe('DENY')
   })
 
-  it('serves the built artifact with those same headers', () => {
-    if (!existsSync(resolve('dist/staticwebapp.config.json'))) return
-    const built = JSON.parse(readFileSync(resolve('dist/staticwebapp.config.json'), 'utf8'))
+  it.skipIf(!hasBuiltConfig)('serves the built artifact with those same headers', () => {
+    const built = JSON.parse(readFileSync(builtConfigPath, 'utf8'))
     // Azure consumes the built copy, not the source file, so a policy that
     // never reaches dist/ would break production while every source-level
     // assertion stayed green.
     expect(built.globalHeaders['Content-Security-Policy'])
       .toBe(config.globalHeaders['Content-Security-Policy'])
+  })
+
+  it('the built-artifact checks above actually ran', () => {
+    // A skip that is never noticed is indistinguishable from a pass. This
+    // fails the build if dist/ is missing, so the three guards below cannot
+    // silently evaporate again.
+    expect(
+      hasArtifact && hasBuiltConfig,
+      'dist/ is missing: run `npm run build` before `npm test` so the artifact assertions run',
+    ).toBe(true)
   })
 })
 
@@ -63,8 +83,7 @@ describe('release server used by the production end-to-end run', () => {
     return `http://127.0.0.1:${server.address().port}`
   }
 
-  it('applies globalHeaders to responses, which vite preview does not', async () => {
-    if (!existsSync(resolve('dist/index.html'))) return
+  it.skipIf(!hasArtifact)('applies globalHeaders to responses, which vite preview does not', async () => {
     const origin = await serve('dist')
     const response = await fetch(origin + '/')
     expect(response.status).toBe(200)
@@ -73,8 +92,7 @@ describe('release server used by the production end-to-end run', () => {
     expect(response.headers.get('x-frame-options')).toBe('DENY')
   })
 
-  it('serves a missing path through the navigation fallback but honours exclusions', async () => {
-    if (!existsSync(resolve('dist/index.html'))) return
+  it.skipIf(!hasArtifact)('serves a missing path through the navigation fallback but honours exclusions', async () => {
     const origin = await serve('dist')
     expect((await fetch(origin + '/some/client/route')).status).toBe(200)
     // /assets/* is excluded from the rewrite, so a missing asset stays a 404
@@ -82,8 +100,7 @@ describe('release server used by the production end-to-end run', () => {
     expect((await fetch(origin + '/assets/does-not-exist.js')).status).toBe(404)
   })
 
-  it('applies the configured MIME types', async () => {
-    if (!existsSync(resolve('dist/index.html'))) return
+  it.skipIf(!hasArtifact)('applies the configured MIME types', async () => {
     const origin = await serve('dist')
     expect((await fetch(origin + '/')).headers.get('content-type')).toMatch(/text\/html/)
   })
